@@ -63,7 +63,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.3"
+    aviConfigureTag = "v4.31"
   }
 }
 
@@ -133,7 +133,7 @@ variable "no_access_vcenter" {
     }
     domains = [
       {
-        name = "vmc.avidemo.fr"
+        name = "altherr.info"
       }
     ]
     network_mgmt = {
@@ -150,7 +150,7 @@ variable "no_access_vcenter" {
       exclude_discovered_subnets = "true"
       vcenter_dvs = "true"
       dhcp_enabled = "false"
-      gateway = "1"
+      defaultGateway = "1"
     }
 //    network_backend = {
 //      name = "avi-backend"
