@@ -20,11 +20,6 @@ resource "null_resource" "foo" {
     destination = "~/.ssh/${basename(var.jump.private_key_path)}"
   }
 
-  provisioner "file" {
-    source      = var.ansible.directory
-    destination = "~/ansible"
-  }
-
   provisioner "remote-exec" {
     inline      = [
       "chmod 600 ~/.ssh/${basename(var.jump.private_key_path)}",

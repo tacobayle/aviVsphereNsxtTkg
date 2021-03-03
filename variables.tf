@@ -63,24 +63,21 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v3.93"
-    opencartInstallUrl = "https://github.com/tacobayle/ansibleOpencartInstall"
-    opencartInstallTag = "v1.21"
-    directory = "ansible"
+    aviConfigureTag = "v4.29"
   }
 }
 
-variable "backend" {
-  type = map
-  default = {
-    cpu = 2
-    memory = 4096
-    disk = 20
-    count = 2
-    wait_for_guest_net_routable = "false"
-    template_name = "ubuntu-bionic-18.04-cloudimg-template"
-  }
-}
+//variable "backend" {
+//  type = map
+//  default = {
+//    cpu = 2
+//    memory = 4096
+//    disk = 20
+//    count = 2
+//    wait_for_guest_net_routable = "false"
+//    template_name = "ubuntu-bionic-18.04-cloudimg-template"
+//  }
+//}
 
 
 //variable "client" {
