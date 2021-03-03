@@ -7,7 +7,7 @@ data "template_file" "jumpbox_userdata" {
   template = file("${path.module}/userdata/jump.userdata")
   vars = {
     pubkey        = file(var.jump.public_key_path)
-    aviSdkVersion = var.jump.avisdkVersion
+    aviSdkVersion = var.jump.aviSdkVersion
     ansibleVersion = var.ansible.version
     ipCidr  = var.jump.ipCidr
     ip = split("/", var.jump.ipCidr)[0]
