@@ -150,7 +150,7 @@ variable "no_access_vcenter" {
       exclude_discovered_subnets = "true"
       vcenter_dvs = "true"
       dhcp_enabled = "false"
-      defaultGateway = "1"
+      defaultGateway = 1
     }
 //    network_backend = {
 //      name = "avi-backend"
