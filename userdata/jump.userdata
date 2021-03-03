@@ -1,0 +1,85 @@
+#cloud-config
+users:
+  - name: ubuntu
+    lock_passwd: true
+    shell: /bin/bash
+    sudo:  ALL=(ALL) NOPASSWD:ALL
+    chpasswd: {expire: False}
+    ssh_authorized_keys:
+      - ${pubkey}
+
+write_files:
+  - content: |
+      #!/bin/bash
+      # retrieve the last network interface
+      #sudo systemctl disable systemd-resolved
+      #sudo systemctl stop systemd-resolved
+      iface=`ip -o link show | awk -F': ' '{print $2}' | tail -1`
+      mac=`ip -o link show | awk -F'link/ether ' '{print $2}' | awk -F' ' '{print $1}'| tail -1`
+      hostname=`hostname`
+      echo "${ip} $hostname" | sudo tee -a /etc/hosts
+      cp ${netplanFile} ${netplanFile}.old
+      echo "network:" | sudo tee ${netplanFile}
+      echo "    ethernets:" | sudo tee -a ${netplanFile}
+      echo "        $iface:" | sudo tee -a ${netplanFile}
+      echo "            dhcp4: false" | sudo tee -a ${netplanFile}
+      echo "            addresses: [${ipCidr}]" | sudo tee -a ${netplanFile}
+      echo "            match:" | sudo tee -a ${netplanFile}
+      echo "                macaddress: $mac" | sudo tee -a ${netplanFile}
+      echo "            set-name: $iface" | sudo tee -a ${netplanFile}
+      echo "            gateway4: ${defaultGw}" | sudo tee -a ${netplanFile}
+      echo "            nameservers:" | sudo tee -a ${netplanFile}
+      echo "              addresses: [${dnsMain}]" | sudo tee -a ${netplanFile}
+      echo "    version: 2" | sudo tee -a ${netplanFile}
+      sudo netplan apply
+      #sudo ip link set $iface down
+      #sudo ip link set $iface up
+      #sudo ip address add ${ipCidr} dev $iface
+      #sudo ip route add default via ${defaultGw}
+      #echo 'nameserver ${dnsMain}' | sudo tee /etc/resolv.conf
+      ping -c 3 www.google.com
+      sudo apt-get update
+      sudo apt-get install -y apache2-utils
+      sudo apt install -y python3-pip
+      sudo apt install -y python-pip
+      sudo apt install -y python-jmespath
+      pip install ansible==${ansibleVersion}
+      pip install avisdk==${aviSdkVersion}
+      pip3 install avisdk==${aviSdkVersion}
+      pip install pyvmomi
+      pip install dnspython
+      pip3 install dnspython
+      pip3 install netaddr
+      pip install netaddr
+      pip install --upgrade pip setuptools
+      pip install --upgrade git+https://github.com/vmware/vsphere-automation-sdk-python.git
+      sudo -u ubuntu ansible-galaxy install -f avinetworks.avisdk
+      sudo mkdir -p /opt/ansible/inventory
+      sudo tee /opt/ansible/inventory/inventory.vmware.yml  > /dev/null <<EOT
+      plugin: vmware_vm_inventory
+      strict: False
+      hostname: ${vsphere_server}
+      username: ${vsphere_user}
+      password: ${vsphere_password}
+      validate_certs: False
+      with_tags: True
+      EOT
+      sudo mkdir -p /etc/ansible
+      sudo tee /etc/ansible/ansible.cfg > /dev/null <<EOT
+      [defaults]
+      private_key_file = /home/${username}/.ssh/${basename(privateKey)}
+      host_key_checking = False
+      host_key_auto_add = True
+      [inventory]
+      enable_plugins = vmware_vm_inventory
+      EOT
+      echo "cloud init done" | tee /tmp/cloudInitDone.log
+    path: /opt/bootstrap.sh
+    permissions: 0755
+
+  - content: |
+      ubuntu ALL=(ALL) NOPASSWD:ALL
+    path: /etc/sudoers.d/ubuntu
+
+runcmd:
+  - /opt/bootstrap.sh
