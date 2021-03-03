@@ -24,9 +24,9 @@ variable "controller" {
     count = "1"
     wait_for_guest_net_timeout = 2
     environment = "VMWARE"
-    mgmt_ip = "10.8.3.201"
+    mgmt_ip = "10.15.3.201"
     mgmt_mask = "255.255.255.0"
-    default_gw = "10.8.3.1"
+    default_gw = "10.15.3.1"
     dns = ["172.18.0.15"]
     ntp = ["95.81.173.155", "188.165.236.162"]
     floatingIp = "1.1.1.1"
@@ -50,9 +50,9 @@ variable "jump" {
     wait_for_guest_net_routable = "false"
     template_name = "ubuntu-bionic-18.04-cloudimg-template"
     aviSdkVersion = "18.2.9"
-    ipCidr = "10.8.3.210/24"
+    ipCidr = "10.15.3.210/24"
     netplanFile = "/etc/netplan/50-cloud-init.yaml"
-    defaultGw = "10.8.3.1"
+    defaultGw = "10.15.3.1"
     dnsMain = "172.18.0.15"
     username = "ubuntu"
   }
@@ -113,14 +113,14 @@ variable "no_access_vcenter" {
         }
       ]
       network_management = {
-        name = "N2-T1_Segment-Mgmt-10.8.3.0-24"
+        name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
         tier1 = "N2-T1_AVI"
-        cidr = "10.8.3.0/24"
+        cidr = "10.15.3.0/24"
       }
       network_vip = {
-        name = "N2-T1_Segment-VIP-A_10.8.4.0-24"
+        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
         tier1 = "N2-T1_AVI"
-        cidr = "10.8.4.0/24"
+        cidr = "10.15.4.0/24"
       }
     }
     vcenter = {
@@ -137,13 +137,13 @@ variable "no_access_vcenter" {
       }
     ]
     network_mgmt = {
-      name = "N2-T1_Segment-Mgmt-10.8.3.0-24" # for SE IP static allocation
-      cidr = "10.8.3.0/24" # for SE IP static allocation
+      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
+      cidr = "10.15.3.0/24" # for SE IP static allocation
       ipStartPool = "11" # for SE IP static allocation
     }
     network_vip = {
-      name = "N2-T1_Segment-VIP-A_10.8.4.0-24"
-      cidr = "10.8.4.0/24"
+      name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+      cidr = "10.15.4.0/24"
       type = "V4"
       ipStartPool = "11"
       ipEndPool = "50"
