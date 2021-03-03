@@ -137,8 +137,8 @@ variable "no_access_vcenter" {
       }
     ]
     network_mgmt = {
-      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
-      cidr = "10.15.3.0/24" # for SE IP static allocation
+      name = "N2-T1_Segment-Mgmt-10.8.3.0-24" # for SE IP static allocation
+      cidr = "10.8.3.0/24" # for SE IP static allocation
       ipStartPool = "11" # for SE IP static allocation
     }
     network_vip = {
