@@ -103,7 +103,7 @@ variable "no_access_vcenter" {
       tier1s = [
         {
           name = "N2-T1_AVI"
-          description = "Created by TF - For Avi Build"
+          description = "N2-T1_AVI"
           route_advertisement_types = [
             "TIER1_STATIC_ROUTES",
             "TIER1_CONNECTED",
