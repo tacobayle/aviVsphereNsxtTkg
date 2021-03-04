@@ -63,7 +63,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.37"
+    aviConfigureTag = "v4.38"
   }
 }
 
@@ -139,7 +139,7 @@ variable "no_access_vcenter" {
     network_mgmt = {
       name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
       cidr = "10.15.3.0/24" # for SE IP static allocation
-      ipStartPool = "11" # for SE IP static allocation
+      ipStartPool = 11 # for SE IP static allocation. keep integer.
     }
     network_vip = {
       name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
@@ -176,7 +176,6 @@ variable "no_access_vcenter" {
       {
         name = "seGroupGslb"
         numberOfSe = 1
-        cloud_ref = "cloudNoAccess"
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
