@@ -166,7 +166,7 @@ variable "no_access_vcenter" {
         name = "Default-Group"
         numberOfSe = 2
         folder = "Avi - SE - Default-Group"
-        dhcp = true
+        dhcp = false
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
