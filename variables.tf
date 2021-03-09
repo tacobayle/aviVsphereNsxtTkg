@@ -165,6 +165,8 @@ variable "no_access_vcenter" {
       {
         name = "Default-Group"
         numberOfSe = 2
+        folder = "Avi - SE - Default-Group"
+        dhcp = true
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
@@ -173,23 +175,21 @@ variable "no_access_vcenter" {
         memory_per_se = "1024"
         mem_reserve = "false"
         extra_shared_config_memory = "0"
-        networks = [
-          "avi-vip"]
       },
-      {
-        name = "seGroupGslb"
-        numberOfSe = 1
-        ha_mode = "HA_MODE_SHARED"
-        min_scaleout_per_vs = "1"
-        disk_per_se = "25"
-        vcpus_per_se = "2"
-        cpu_reserve = "false"
-        memory_per_se = "1024"
-        mem_reserve = "false"
-        extra_shared_config_memory = "0"
-        networks = [
-          "avi-vip"]
-      }
+//      {
+//        name = "seGroupGslb"
+//        numberOfSe = 1
+//
+//
+//        ha_mode = "HA_MODE_SHARED"
+//        min_scaleout_per_vs = "1"
+//        disk_per_se = "25"
+//        vcpus_per_se = "2"
+//        cpu_reserve = "false"
+//        memory_per_se = "1024"
+//        mem_reserve = "false"
+//        extra_shared_config_memory = "0"
+//      }
     ]
 //    pool = {
 //      name = "pool1"
