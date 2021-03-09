@@ -1,8 +1,10 @@
 variable "vsphere_username" {}
 variable "vsphere_password" {}
+variable "vsphere_server" {}
 
 variable "nsx_username" {}
 variable "nsx_password" {}
+variable "nsx_server" {}
 
 variable "avi_username" {}
 variable "avi_password" {}
@@ -63,7 +65,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.38"
+    aviConfigureTag = "v4.42"
   }
 }
 
@@ -136,10 +138,11 @@ variable "no_access_vcenter" {
         name = "altherr.info"
       }
     ]
-    network_mgmt = {
+    network_management = {
       name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
       cidr = "10.15.3.0/24" # for SE IP static allocation
-      ipStartPool = 11 # for SE IP static allocation. keep integer.
+      ipStartPool = 21 # for SE IP static allocation. keep integer.
+      defaultGateway = 1
     }
     network_vip = {
       name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
