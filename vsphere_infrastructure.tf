@@ -19,7 +19,7 @@ data "vsphere_resource_pool" "pool" {
 
 data "vsphere_network" "networkMgmt" {
   depends_on = [time_sleep.wait_segment]
-  name = var.no_access_vcenter.network_mgmt.name
+  name = var.no_access_vcenter.network_management.name
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 //
