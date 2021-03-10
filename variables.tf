@@ -65,7 +65,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.52"
+    aviConfigureTag = "v4.53"
   }
 }
 
@@ -175,21 +175,28 @@ variable "no_access_vcenter" {
         memory_per_se = "1024"
         mem_reserve = "false"
         extra_shared_config_memory = "0"
+        ips_management = [
+          "10.15.3.21",
+          "10.15.3.22",
+        ]
       },
-//      {
-//        name = "seGroupGslb"
-//        numberOfSe = 1
-//
-//
-//        ha_mode = "HA_MODE_SHARED"
-//        min_scaleout_per_vs = "1"
-//        disk_per_se = "25"
-//        vcpus_per_se = "2"
-//        cpu_reserve = "false"
-//        memory_per_se = "1024"
-//        mem_reserve = "false"
-//        extra_shared_config_memory = "0"
-//      }
+      {
+        name = "seGroupGslb"
+        numberOfSe = 1
+        folder = "Avi - SE - Default-Group"
+        dhcp = false
+        ha_mode = "HA_MODE_SHARED"
+        min_scaleout_per_vs = "1"
+        disk_per_se = "25"
+        vcpus_per_se = "2"
+        cpu_reserve = "false"
+        memory_per_se = "1024"
+        mem_reserve = "false"
+        extra_shared_config_memory = "0"
+        ips_management = [
+          "10.15.3.23"
+        ]
+      }
     ]
 //    pool = {
 //      name = "pool1"
