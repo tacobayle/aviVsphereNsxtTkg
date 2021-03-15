@@ -46,7 +46,7 @@ resource "nsxt_policy_segment" "networkVip" {
   transport_zone_path = data.nsxt_policy_transport_zone.tz.path
   description         = "Network Segment built by Terraform"
   subnet {
-    cidr        = "${cidrhost(var.no_access_vcenter.nsxt.network_vip.cidr, 1)}/${split("/", var.no_access_vcenter.nsxt.network_vip.cidr)[1]}"
+    cidr        = var.no_access_vcenter.nsxt.network_vip.defaultGateway
     }
 }
 
@@ -66,7 +66,7 @@ resource "nsxt_policy_segment" "networkMgmt" {
   transport_zone_path = data.nsxt_policy_transport_zone.tz.path
   description         = "Network Segment built by Terraform"
   subnet {
-    cidr        = "${cidrhost(var.no_access_vcenter.nsxt.network_management.cidr, 1)}/${split("/", var.no_access_vcenter.nsxt.network_management.cidr)[1]}"
+    cidr        = var.no_access_vcenter.nsxt.network_management.defaultGateway
   }
 }
 

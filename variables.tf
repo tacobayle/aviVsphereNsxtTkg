@@ -96,6 +96,7 @@ variable "ansible" {
 variable "no_access_vcenter" {
   default = {
     name = "cloudNoAccess"
+    environment = "vsphere"
     dhcp_enabled = false
     nsxt = {
       server = "10.8.0.20"
@@ -117,12 +118,12 @@ variable "no_access_vcenter" {
       network_management = {
         name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
         tier1 = "N2-T1_AVI"
-        cidr = "10.15.3.0/24"
+        defaultGateway = "10.15.3.1/24"
       }
       network_vip = {
         name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
         tier1 = "N2-T1_AVI"
-        cidr = "10.15.4.0/24"
+        defaultGateway = "10.15.4.1/24"
       }
     }
     vcenter = {
@@ -140,13 +141,11 @@ variable "no_access_vcenter" {
     ]
     network_management = {
       name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
-      cidr = "10.15.3.0/24" # for SE IP static allocation
-      ipStartPool = 21 # for SE IP static allocation. keep integer.
-      defaultGateway = 1
+      defaultGateway = "10.15.3.1/24"
     }
     network_vip = {
       name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-      cidr = "10.15.4.0/24"
+      defaultGateway = "10.15.4.1/24"
       type = "V4"
       ipStartPool = "11"
       ipEndPool = "50"
