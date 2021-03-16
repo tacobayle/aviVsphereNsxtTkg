@@ -9,15 +9,22 @@ variable "nsx_server" {}
 variable "avi_username" {}
 variable "avi_password" {}
 
+//variable "contentLibrary" {
+//  default = {
+//    name = "Avi Content Library"
+//    description = "Avi Content Library"
+//    avi = "/home/christoph/Downloads/controller-20.1.4-9087.ova"
+//    ubuntu = "/home/christoph/Downloads/bionic-server-cloudimg-amd64.ova"
+//  }
+//}
+
 variable "contentLibrary" {
   default = {
-    name = "Avi Content Library"
-    description = "Avi Content Library"
+    name = "CL_tmp_avi"
     avi = "/home/christoph/Downloads/controller-20.1.4-9087.ova"
     ubuntu = "/home/christoph/Downloads/bionic-server-cloudimg-amd64.ova"
   }
 }
-
 variable "controller" {
   default = {
     cpu = 8
@@ -65,7 +72,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.83"
+    aviConfigureTag = "v4.85"
   }
 }
 
