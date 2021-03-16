@@ -65,7 +65,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.78"
+    aviConfigureTag = "v4.79"
   }
 }
 
@@ -166,7 +166,6 @@ variable "no_access_vcenter" {
       {
         name = "Default-Group"
         numberOfSe = 2
-        folder = "Avi - SE - Default-Group"
         dhcp = false
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
@@ -184,7 +183,6 @@ variable "no_access_vcenter" {
       {
         name = "seGroupGslb"
         numberOfSe = 1
-        folder = "Avi - SE - Default-Group"
         dhcp = false
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
