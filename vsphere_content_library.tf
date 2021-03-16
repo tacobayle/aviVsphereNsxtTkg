@@ -30,4 +30,5 @@ data "vsphere_content_library_item" "avi" {
 data "vsphere_content_library_item" "ubuntu" {
   name       = "bionic-server-cloudimg-amd64"
   library_id = data.vsphere_content_library.library.id
+  type = "ova"
 }
