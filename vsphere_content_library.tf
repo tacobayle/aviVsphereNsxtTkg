@@ -25,6 +25,7 @@ data "vsphere_content_library" library {
 data "vsphere_content_library_item" "avi" {
   name       = "controller-20.1.4-9087"
   library_id = data.vsphere_content_library.library.id
+  type = "ova"
 }
 
 data "vsphere_content_library_item" "ubuntu" {
