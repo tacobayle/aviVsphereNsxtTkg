@@ -65,7 +65,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.82"
+    aviConfigureTag = "v4.83"
   }
 }
 
@@ -165,7 +165,7 @@ variable "no_access_vcenter" {
     serviceEngineGroup = [
       {
         name = "Default-Group"
-        numberOfSe = 2
+        numberOfSe = 1
         dhcp = false
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
@@ -179,9 +179,10 @@ variable "no_access_vcenter" {
           {
             name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
             ips = [
-              "10.15.4.21/24",
-              "10.15.4.22/24"
+              "10.15.4.21/24"
+//              "10.15.4.22/24"
             ]
+            dhcp = false
             default = true
           }
         ]
