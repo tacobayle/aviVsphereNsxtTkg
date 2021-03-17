@@ -198,6 +198,7 @@ variable "no_access_vcenter" {
           defaultGateway = "10.15.3.1/24"
           ips = [
             "10.15.3.21"
+//            "10.15.3.22"
           ]
         }
 
