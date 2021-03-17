@@ -23,7 +23,7 @@ resource "null_resource" "foo" {
   provisioner "remote-exec" {
     inline      = [
       "chmod 600 ~/.ssh/${basename(var.jump.private_key_path)}",
-      "cd ~/ansible ; git clone ${var.ansible.aviConfigureUrl} --branch ${var.ansible.aviConfigureTag} ; cd ${split("/", var.ansible.aviConfigureUrl)[4]} ; ansible-playbook -i /opt/ansible/inventory/inventory.vmware.yml local.yml --extra-vars '{\"avi_username\": ${jsonencode(var.avi_username)}, \"avi_password\": ${jsonencode(var.avi_password)}, \"avi_version\": ${split("-", basename(var.contentLibrary.avi))[1]}, \"controllerPrivateIps\": ${jsonencode(vsphere_virtual_machine.controller.*.default_ip_address)}, \"controller\": ${jsonencode(var.controller)}, \"vsphere_username\": ${jsonencode(var.vsphere_username)}, \"vsphere_password\": ${jsonencode(var.vsphere_password)}, \"vsphere_server\": ${jsonencode(var.vsphere_server)}, \"no_access_vcenter\": ${jsonencode(var.no_access_vcenter)}}'",
+      "git clone ${var.ansible.aviConfigureUrl} --branch ${var.ansible.aviConfigureTag} ; cd ${split("/", var.ansible.aviConfigureUrl)[4]} ; ansible-playbook -i /opt/ansible/inventory/inventory.vmware.yml local.yml --extra-vars '{\"avi_username\": ${jsonencode(var.avi_username)}, \"avi_password\": ${jsonencode(var.avi_password)}, \"avi_version\": ${split("-", basename(var.contentLibrary.avi))[1]}, \"controllerPrivateIps\": ${jsonencode(vsphere_virtual_machine.controller.*.default_ip_address)}, \"controller\": ${jsonencode(var.controller)}, \"vsphere_username\": ${jsonencode(var.vsphere_username)}, \"vsphere_password\": ${jsonencode(var.vsphere_password)}, \"vsphere_server\": ${jsonencode(var.vsphere_server)}, \"no_access_vcenter\": ${jsonencode(var.no_access_vcenter)}}'",
     ]
   }
 }

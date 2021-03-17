@@ -174,7 +174,7 @@ variable "no_access_vcenter" {
       {
         name = "Default-Group"
         numberOfSe = 1
-        dhcp = false
+        dhcp = false # only for management
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
