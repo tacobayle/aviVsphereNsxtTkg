@@ -21,8 +21,9 @@ resource "time_sleep" "wait_tier1" {
 }
 
 data "nsxt_policy_tier1_gateway" "avi_network_vip_tier1_router" {
+  count = length(var.no_access_vcenter.nsxt.networks_data)
   depends_on = [time_sleep.wait_tier1]
-  display_name = var.no_access_vcenter.nsxt.network_vip.tier1
+  display_name = var.no_access_vcenter.nsxt.networks_data[count.index].tier1
 }
 
 //data "nsxt_policy_tier1_gateway" "avi_network_backend_tier1_router" {
@@ -42,12 +43,12 @@ data "nsxt_policy_tier1_gateway" "avi_network_mgmt_tier1_router" {
 
 resource "nsxt_policy_segment" "networkVip" {
   count = length(var.no_access_vcenter.nsxt.networks_data)
-  display_name        = var.no_access_vcenter.nsxt.network_vip.name
-  connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_vip_tier1_router.path
+  display_name        = var.no_access_vcenter.nsxt.networks_data[count.index].name
+  connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_vip_tier1_router[count.index].path
   transport_zone_path = data.nsxt_policy_transport_zone.tz.path
   description         = "Network Segment built by Terraform"
   subnet {
-    cidr        = var.no_access_vcenter.nsxt.network_vip.defaultGateway
+    cidr        = var.no_access_vcenter.nsxt.networks_data[count.index].defaultGateway
     }
 }
 

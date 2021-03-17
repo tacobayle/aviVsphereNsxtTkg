@@ -129,11 +129,11 @@ variable "no_access_vcenter" {
         tier1 = "N2-T1_AVI"
         defaultGateway = "10.15.3.1/24"
       }
-      network_vip = {
-        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-        tier1 = "N2-T1_AVI"
-        defaultGateway = "10.15.4.1/24"
-      }
+//      network_vip = {
+//        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+//        tier1 = "N2-T1_AVI"
+//        defaultGateway = "10.15.4.1/24"
+//      }
       networks_data = [
         {
           name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
