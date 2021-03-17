@@ -134,6 +134,18 @@ variable "no_access_vcenter" {
         tier1 = "N2-T1_AVI"
         defaultGateway = "10.15.4.1/24"
       }
+      networks_data = [
+        {
+          name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+          tier1 = "N2-T1_AVI"
+          defaultGateway = "10.15.4.1/24"
+        },
+        {
+          name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
+          tier1 = "N2-T1_AVI"
+          defaultGateway = "10.15.5.1/24"
+        }
+      ]
     }
     vcenter = {
       dc = "N2-DC"
@@ -149,7 +161,7 @@ variable "no_access_vcenter" {
       }
     ]
     network_management = {
-      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
+      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for jump and Avi Controller
       defaultGateway = "10.15.3.1/24"
     }
     network_vip = {
@@ -183,6 +195,14 @@ variable "no_access_vcenter" {
         memory_per_se = "1024"
         mem_reserve = "false"
         extra_shared_config_memory = "0"
+        management_network = {
+          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+          defaultGateway = "10.15.3.1/24"
+          ips = [
+            "10.15.3.21"
+            //            "10.15.3.22"
+          ]
+        }
         data_networks = [
           {
             name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
@@ -191,16 +211,17 @@ variable "no_access_vcenter" {
 //              "10.15.4.22/24"
             ]
             dhcp = false
+          },
+          {
+            name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
+            ips = [
+              "10.15.5.21/24"
+              //              "10.15.4.22/24"
+            ]
+            dhcp = false
           }
         ]
-        management_network = {
-          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
-          defaultGateway = "10.15.3.1/24"
-          ips = [
-            "10.15.3.21"
-//            "10.15.3.22"
-          ]
-        }
+
 
 //        ips_management = [
 //          "10.15.3.21"

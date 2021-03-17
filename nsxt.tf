@@ -41,6 +41,7 @@ data "nsxt_policy_tier1_gateway" "avi_network_mgmt_tier1_router" {
 //}
 
 resource "nsxt_policy_segment" "networkVip" {
+  count = length(var.no_access_vcenter.nsxt.networks_data)
   display_name        = var.no_access_vcenter.nsxt.network_vip.name
   connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_vip_tier1_router.path
   transport_zone_path = data.nsxt_policy_transport_zone.tz.path
