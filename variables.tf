@@ -148,10 +148,10 @@ variable "no_access_vcenter" {
         name = "altherr.info"
       }
     ]
-//    network_management = {
-//      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
-//      defaultGateway = "10.15.3.1/24"
-//    }
+    network_management = {
+      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
+      defaultGateway = "10.15.3.1/24"
+    }
     network_vip = {
       name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
       defaultGateway = "10.15.4.1/24"
