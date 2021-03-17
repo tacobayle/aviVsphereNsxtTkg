@@ -201,10 +201,10 @@ variable "no_access_vcenter" {
           ]
         }
 
-        ips_management = [
-          "10.15.3.21"
-//          "10.15.3.22",
-        ]
+//        ips_management = [
+//          "10.15.3.21"
+////          "10.15.3.22",
+//        ]
       },
 //      {
 //        name = "seGroupGslb"
