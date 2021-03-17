@@ -72,7 +72,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.88"
+    aviConfigureTag = "v4.89"
   }
 }
 
@@ -174,14 +174,7 @@ variable "no_access_vcenter" {
       exclude_discovered_subnets = "true"
       vcenter_dvs = "true"
       dhcp_enabled = "false"
-//      defaultGateway = 1
     }
-//    network_backend = {
-//      name = "avi-backend"
-//      cidr = "10.1.2.0/24"
-//      networkRangeBegin = "11" # for NSX-T segment
-//      networkRangeEnd = "50" # for NSX-T segment
-//    }
     serviceEngineGroup = [
       {
         name = "Default-Group"
@@ -216,17 +209,11 @@ variable "no_access_vcenter" {
             name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
             ips = [
               "10.15.5.21/24"
-              //              "10.15.4.22/24"
+              //              "10.15.5.22/24"
             ]
             dhcp = false
           }
         ]
-
-
-//        ips_management = [
-//          "10.15.3.21"
-////          "10.15.3.22",
-//        ]
       },
 //      {
 //        name = "seGroupGslb"
