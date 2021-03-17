@@ -191,7 +191,6 @@ variable "no_access_vcenter" {
 //              "10.15.4.22/24"
             ]
             dhcp = false
-            default = true
           }
         ]
         ips_management = [
