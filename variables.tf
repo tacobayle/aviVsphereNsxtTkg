@@ -178,7 +178,7 @@ variable "no_access_vcenter" {
     serviceEngineGroup = [
       {
         name = "Default-Group"
-        numberOfSe = 1
+        numberOfSe = 2
         dhcp = false # only for management
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
@@ -192,45 +192,65 @@ variable "no_access_vcenter" {
           name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
           defaultGateway = "10.15.3.1/24"
           ips = [
-            "10.15.3.21"
-            //            "10.15.3.22"
+            "10.15.3.21",
+            "10.15.3.22"
           ]
         }
         data_networks = [
           {
             name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
             ips = [
-              "10.15.4.21/24"
-//              "10.15.4.22/24"
+              "10.15.4.21/24",
+              "10.15.4.22/24"
             ]
             dhcp = false
           },
           {
             name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
             ips = [
-              "10.15.5.21/24"
-              //              "10.15.5.22/24"
+              "10.15.5.21/24",
+              "10.15.5.22/24"
             ]
             dhcp = false
           }
         ]
       },
-//      {
-//        name = "seGroupGslb"
-//        numberOfSe = 1
-//        dhcp = false
-//        ha_mode = "HA_MODE_SHARED"
-//        min_scaleout_per_vs = "1"
-//        disk_per_se = "25"
-//        vcpus_per_se = "2"
-//        cpu_reserve = "false"
-//        memory_per_se = "1024"
-//        mem_reserve = "false"
-//        extra_shared_config_memory = "0"
-//        ips_management = [
-//          "10.15.3.23"
-//        ]
-//      }
+      {
+        name = "seGroupGslb"
+        numberOfSe = 1
+        dhcp = false # only for management
+        ha_mode = "HA_MODE_SHARED"
+        min_scaleout_per_vs = "1"
+        disk_per_se = "25"
+        vcpus_per_se = "2"
+        cpu_reserve = "false"
+        memory_per_se = "1024"
+        mem_reserve = "false"
+        extra_shared_config_memory = "0"
+        management_network = {
+          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+          defaultGateway = "10.15.3.1/24"
+          ips = [
+            "10.15.3.23"
+          ]
+        }
+        data_networks = [
+          {
+            name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+            ips = [
+              "10.15.4.23/24"
+            ]
+            dhcp = false
+          },
+          {
+            name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
+            ips = [
+              "10.15.5.23/24"
+            ]
+            dhcp = false
+          }
+        ]
+      }
     ]
 //    pool = {
 //      name = "pool1"
