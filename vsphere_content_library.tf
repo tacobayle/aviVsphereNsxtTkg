@@ -25,11 +25,11 @@ data "vsphere_content_library" library {
 data "vsphere_content_library_item" "avi" {
   name       = "controller-20.1.4-9087"
   library_id = data.vsphere_content_library.library.id
-  type = "ova"
+  type = "ova" # required but not documented
 }
 
 data "vsphere_content_library_item" "ubuntu" {
   name       = "bionic-server-cloudimg-amd64"
   library_id = data.vsphere_content_library.library.id
-  type = "ova"
+  type = "ova" # required but not documented
 }

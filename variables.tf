@@ -72,7 +72,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.85"
+    aviConfigureTag = "v4.86"
   }
 }
 
@@ -155,6 +155,7 @@ variable "no_access_vcenter" {
     network_vip = {
       name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
       defaultGateway = "10.15.4.1/24"
+      defaultGatewaySe = true
       type = "V4"
       ipStartPool = "11"
       ipEndPool = "50"
