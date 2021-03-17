@@ -72,7 +72,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.87"
+    aviConfigureTag = "v4.88"
   }
 }
 
@@ -148,10 +148,10 @@ variable "no_access_vcenter" {
         name = "altherr.info"
       }
     ]
-    network_management = {
-      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
-      defaultGateway = "10.15.3.1/24"
-    }
+//    network_management = {
+//      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for SE IP static allocation
+//      defaultGateway = "10.15.3.1/24"
+//    }
     network_vip = {
       name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
       defaultGateway = "10.15.4.1/24"
@@ -162,7 +162,7 @@ variable "no_access_vcenter" {
       exclude_discovered_subnets = "true"
       vcenter_dvs = "true"
       dhcp_enabled = "false"
-      defaultGateway = 1
+//      defaultGateway = 1
     }
 //    network_backend = {
 //      name = "avi-backend"
@@ -193,6 +193,14 @@ variable "no_access_vcenter" {
             dhcp = false
           }
         ]
+        management_network = {
+          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+          defaultGateway = "10.15.3.1/24"
+          ips = [
+            "10.15.3.21"
+          ]
+        }
+
         ips_management = [
           "10.15.3.21"
 //          "10.15.3.22",
