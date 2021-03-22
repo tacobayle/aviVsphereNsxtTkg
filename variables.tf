@@ -72,7 +72,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v4.89"
+    aviConfigureTag = "v5.04"
   }
 }
 
@@ -167,7 +167,7 @@ variable "no_access_vcenter" {
     network_vip = {
       name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
       defaultGateway = "10.15.4.1/24"
-      defaultGatewaySe = true
+//      defaultGatewaySe = true
       type = "V4"
       ipStartPool = "11"
       ipEndPool = "50"
@@ -179,7 +179,6 @@ variable "no_access_vcenter" {
       {
         name = "Default-Group"
         numberOfSe = 2
-        dhcp = false # only for management
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
@@ -192,24 +191,29 @@ variable "no_access_vcenter" {
           name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
           defaultGateway = "10.15.3.1/24"
           ips = [
-            "10.15.3.21",
-            "10.15.3.22"
+            "21",
+            "22"
           ]
+          dhcp = false
         }
         data_networks = [
           {
             name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+            defaultGateway = "10.15.4.1/24"
+            defaultGatewaySeGroup = true
             ips = [
-              "10.15.4.21/24",
-              "10.15.4.22/24"
+              "21",
+              "22"
             ]
             dhcp = false
           },
           {
             name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
+            defaultGateway = "10.15.5.1/24"
+            defaultGatewaySeGroup = false
             ips = [
-              "10.15.5.21/24",
-              "10.15.5.22/24"
+              "21",
+              "22"
             ]
             dhcp = false
           }
@@ -231,21 +235,26 @@ variable "no_access_vcenter" {
           name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
           defaultGateway = "10.15.3.1/24"
           ips = [
-            "10.15.3.23"
+            "23"
           ]
+          dhcp = false
         }
         data_networks = [
           {
             name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+            defaultGateway = "10.15.4.1/24"
+            defaultGatewaySeGroup = true
             ips = [
-              "10.15.4.23/24"
+              "23"
             ]
             dhcp = false
           },
           {
             name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
+            defaultGateway = "10.15.5.1/24"
+            defaultGatewaySeGroup = false
             ips = [
-              "10.15.5.23/24"
+              "23"
             ]
             dhcp = false
           }
