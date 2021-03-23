@@ -105,8 +105,8 @@ variable "no_access_vcenter" {
     name = "cloudNoAccess"
     environment = "vsphere"
     dhcp_enabled = false
-    dhcp_enabled = true
     application = true
+    nsxt_exclusion_list = true
     nsxt = {
       server = "10.8.0.20"
       transport_zone = {
