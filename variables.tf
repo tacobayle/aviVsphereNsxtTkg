@@ -178,7 +178,7 @@ variable "no_access_vcenter" {
     serviceEngineGroup = [
       {
         name = "Default-Group"
-        numberOfSe = 2
+        numberOfSe = 1
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
@@ -200,7 +200,7 @@ variable "no_access_vcenter" {
           {
             name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
             defaultGateway = "10.15.4.1/24"
-            defaultGatewaySeGroup = true
+            defaultGatewaySeGroup = false
             ips = [
               "21",
               "22"
@@ -220,8 +220,8 @@ variable "no_access_vcenter" {
         ]
       },
       {
-        name = "seGroupGslb"
-        numberOfSe = 1
+        name = "n2-tkg-cluster-01"
+        numberOfSe = 2
         dhcp = false # only for management
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
@@ -235,7 +235,8 @@ variable "no_access_vcenter" {
           name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
           defaultGateway = "10.15.3.1/24"
           ips = [
-            "23"
+            "23",
+            "24"
           ]
           dhcp = false
         }
@@ -243,18 +244,20 @@ variable "no_access_vcenter" {
           {
             name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
             defaultGateway = "10.15.4.1/24"
-            defaultGatewaySeGroup = true
+            defaultGatewaySeGroup = false
             ips = [
-              "23"
+              "23",
+              "24"
             ]
             dhcp = false
           },
           {
             name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
             defaultGateway = "10.15.5.1/24"
-            defaultGatewaySeGroup = false
+            defaultGatewaySeGroup = true
             ips = [
-              "23"
+              "23",
+              "24"
             ]
             dhcp = false
           }
