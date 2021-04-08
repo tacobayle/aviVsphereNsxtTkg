@@ -101,7 +101,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v5.06"
+    aviConfigureTag = "v5.07"
   }
 }
 
@@ -145,8 +145,8 @@ variable "nsxt" {
       }
       tier1s = [
         {
-          name = "N2-T1_AVI"
-          description = "N2-T1_AVI"
+          name = "N2-T1_AVI_1"
+          description = "N2-T1_AVI_1"
           route_advertisement_types = [
             "TIER1_STATIC_ROUTES",
             "TIER1_CONNECTED",
@@ -157,25 +157,25 @@ variable "nsxt" {
       ]
       network_backend = {
         name = "N2-T1_Segment-Backend_10.15.6.0-24"
-        tier1 = "N2-T1_AVI"
+        tier1 = "N2-T1_AVI_1"
         cidr = "10.15.6.1/24"
       }
       network_management = {
         name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
-        tier1 = "N2-T1_AVI"
+        tier1 = "N2-T1_AVI_1"
         defaultGateway = "10.15.3.1/24"
       }
       networks_data = [
         {
           name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-          tier1 = "N2-T1_AVI"
+          tier1 = "N2-T1_AVI_1"
           defaultGateway = "10.15.4.1/24"
           ipStartPool = "11"
           ipEndPool = "50"
         },
         {
           name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
-          tier1 = "N2-T1_AVI"
+          tier1 = "N2-T1_AVI_1"
           defaultGateway = "10.15.5.1/24"
         }
       ]
@@ -207,18 +207,18 @@ variable "nsxt" {
     networks_data = [
       {
         name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-        tier1 = "N2-T1_AVI"
+        tier1 = "N2-T1_AVI_1"
         defaultGateway = "10.15.4.1/24"
       },
       {
         name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
-        tier1 = "N2-T1_AVI"
+        tier1 = "N2-T1_AVI_1"
         defaultGateway = "10.15.5.1/24"
       }
     ]
     network_backend = {
       name = "N2-T1_Segment-Backend_10.15.6.0-24"
-      tier1 = "N2-T1_AVI"
+      tier1 = "N2-T1_AVI_1"
       cidr = "10.7.6.0/24"
     }
   }
@@ -238,8 +238,8 @@ variable "no_access_vcenter" {
       }
       tier1s = [
         {
-          name = "N2-T2_AVI"
-          description = "N2-T1_AVI"
+          name = "N2-T1_AVI_2"
+          description = "N2-T1_AVI_2"
           route_advertisement_types = [
             "TIER1_STATIC_ROUTES",
             "TIER1_CONNECTED",
@@ -261,12 +261,12 @@ variable "no_access_vcenter" {
       networks_data = [
         {
           name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
-          tier1 = "N2-T2_AVI"
+          tier1 = "N2-T1_AVI_2"
           defaultGateway = "10.15.7.1/24"
         },
         {
           name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
-          tier1 = "N2-T2_AVI"
+          tier1 = "N2-T1_AVI_2"
           defaultGateway = "10.15.8.1/24"
         }
       ]
