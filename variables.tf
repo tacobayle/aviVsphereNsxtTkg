@@ -170,6 +170,8 @@ variable "nsxt" {
           name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
           tier1 = "N2-T1_AVI"
           defaultGateway = "10.15.4.1/24"
+          ipStartPool = "11"
+          ipEndPool = "50"
         },
         {
           name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
