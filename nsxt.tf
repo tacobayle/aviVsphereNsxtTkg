@@ -44,7 +44,7 @@ resource "time_sleep" "wait_tier1_nsxt" {
 
 data "nsxt_policy_tier1_gateway" "avi_network_backend_tier1_router_nsxt" {
   depends_on = [time_sleep.wait_tier1_nsxt]
-  display_name = var.nsxt.nsxt.network_backend[count.index].tier1
+  display_name = var.nsxt.nsxt.network_backend.tier1
 }
 
 resource "nsxt_policy_segment" "networkBackend" {
