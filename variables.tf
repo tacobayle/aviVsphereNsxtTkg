@@ -21,6 +21,7 @@ variable "avi_password" {}
 variable "contentLibrary" {
   default = {
     name = "CL_tmp_avi"
+    description = "CL_tmp_avi"
     avi = "/home/christoph/Downloads/controller-20.1.4-9087.ova"
     ubuntu = "/home/christoph/Downloads/bionic-server-cloudimg-amd64.ova"
   }
