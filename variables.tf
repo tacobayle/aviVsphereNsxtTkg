@@ -77,7 +77,7 @@ variable "backend" {
     wait_for_guest_net_routable = "false"
     template_name = "ubuntu-bionic-18.04-cloudimg-template"
     netplanFile = "/etc/netplan/50-cloud-init.yaml"
-    defaultGw = "10.7.6.1"
+    defaultGw = "10.15.6.1"
     url_demovip_server = "https://github.com/tacobayle/demovip_server"
     username = "ubuntu"
     dnsMain = "172.18.0.15"
