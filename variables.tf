@@ -67,6 +67,34 @@ variable "jump" {
   }
 }
 
+variable "backend" {
+  default = {
+    cpu = 1
+    memory = 2048
+    disk = 10
+    network = "N1-T1_Segment-Backend_10.7.6.0-24"
+    wait_for_guest_net_routable = "false"
+    template_name = "ubuntu-bionic-18.04-cloudimg-template"
+    netplanFile = "/etc/netplan/50-cloud-init.yaml"
+    defaultGw = "10.7.6.1"
+    url_demovip_server = "https://github.com/tacobayle/demovip_server"
+    username = "ubuntu"
+    dnsMain = "172.18.0.15"
+    dnsSec = "10.206.8.131"
+    subnetMask = "/24"
+    nsxtGroup = {
+      name = "n1-avi-backend"
+      description = "Created by TF - For Avi Build"
+      tag = "n1-avi-backend"
+    }
+  }
+}
+
+variable "backendIps" {
+  type = list
+  default = ["10.15.6.10", "10.15.6.11", "10.15.6.12"]
+}
+
 variable "ansible" {
   type = map
   default = {
@@ -100,15 +128,17 @@ variable "ansible" {
 //  }
 //}
 
-variable "no_access_vcenter" {
+variable "nsxt" {
   default = {
-    name = "cloudNoAccess"
-    environment = "vsphere"
-    dhcp_enabled = false
-    application = true
-    nsxt_exclusion_list = true
+    name = "cloudNsxt"
+    dhcp_enabled = "false"
+    obj_name_prefix = "AVINSXT"
+    domains = [
+      {
+        name = "nsxt.altherr.info"
+      }
+    ]
     nsxt = {
-      server = "10.8.0.20"
       transport_zone = {
         name = "N2_TZ_nested_nsx-overlay"
       }
@@ -124,16 +154,16 @@ variable "no_access_vcenter" {
           tier0 = "N2_T0"
         }
       ]
+      network_backend = {
+        name = "N2-T1_Segment-Backend_10.15.6.0-24"
+        tier1 = "N2-T1_AVI"
+        cidr = "10.15.6.1/24"
+      }
       network_management = {
         name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
         tier1 = "N2-T1_AVI"
         defaultGateway = "10.15.3.1/24"
       }
-//      network_vip = {
-//        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-//        tier1 = "N2-T1_AVI"
-//        defaultGateway = "10.15.4.1/24"
-//      }
       networks_data = [
         {
           name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
@@ -148,8 +178,98 @@ variable "no_access_vcenter" {
       ]
     }
     vcenter = {
+      name = "vcenter-server-A"
       dc = "N2-DC"
-      server = "10.8.0.10"
+      cluster = "N2-Cluster1"
+      datastore = "vsanDatastore"
+      resource_pool = "N2-Cluster1/Resources"
+      folderAvi = "Avi-Controllers"
+      folderApp = "Avi-Apps"
+      content_library = {
+        name = "Avi SE Content Library"
+        description = "TF built - Avi SE Content Library"
+      }
+    }
+    management_network = {
+      name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+      tier1 = "N2-T1_AVI"
+      cidr = "10.15.3.0/24"
+      ipStartPool = "11"
+      ipEndPool = "50"
+      type = "V4"
+      dhcp_enabled = "no"
+      exclude_discovered_subnets = "true"
+      vcenter_dvs = "true"
+    }
+    networks_data = [
+      {
+        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+        tier1 = "N2-T1_AVI"
+        defaultGateway = "10.15.4.1/24"
+      },
+      {
+        name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
+        tier1 = "N2-T1_AVI"
+        defaultGateway = "10.15.5.1/24"
+      }
+    ]
+    network_backend = {
+      name = "N2-T1_Segment-Backend_10.15.6.0-24"
+      tier1 = "N2-T1_AVI"
+      cidr = "10.7.6.0/24"
+    }
+  }
+}
+
+variable "no_access_vcenter" {
+  default = {
+    name = "cloudNoAccess"
+    environment = "vsphere"
+    dhcp_enabled = false
+    application = true # if true, it will create an Avi DNS profile with no_access_vcenter.domains as domains and an Avi IPAM profile
+    nsxt_exclusion_list = true
+    nsxt = {
+//      server = "10.8.0.20"
+      transport_zone = {
+        name = "N2_TZ_nested_nsx-overlay"
+      }
+      tier1s = [
+        {
+          name = "N2-T2_AVI"
+          description = "N2-T1_AVI"
+          route_advertisement_types = [
+            "TIER1_STATIC_ROUTES",
+            "TIER1_CONNECTED",
+            "TIER1_LB_VIP"]
+          # TIER1_LB_VIP needs to be tested - 20.1.3 TOI
+          tier0 = "N2_T0"
+        }
+      ]
+//      network_management = {
+//        name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+//        tier1 = "N2-T1_AVI"
+//        defaultGateway = "10.15.3.1/24"
+//      }
+//      network_vip = {
+//        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+//        tier1 = "N2-T1_AVI"
+//        defaultGateway = "10.15.4.1/24"
+//      }
+      networks_data = [
+        {
+          name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
+          tier1 = "N2-T2_AVI"
+          defaultGateway = "10.15.7.1/24"
+        },
+        {
+          name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
+          tier1 = "N2-T2_AVI"
+          defaultGateway = "10.15.8.1/24"
+        }
+      ]
+    }
+    vcenter = {
+      dc = "N2-DC"
       cluster = "N2-Cluster1"
       datastore = "vsanDatastore"
       resource_pool = "N2-Cluster1/Resources"
@@ -157,7 +277,7 @@ variable "no_access_vcenter" {
     }
     domains = [
       {
-        name = "altherr.info"
+        name = "tkg.altherr.info"
       }
     ]
     network_management = {
@@ -165,12 +285,12 @@ variable "no_access_vcenter" {
       defaultGateway = "10.15.3.1/24"
     }
     network_vip = {
-      name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-      defaultGateway = "10.15.4.1/24"
+      name = "N2-T2_Segment-VIP-A_10.15.7.0-24" # this is used for Avi IPAM profile config.
+      defaultGateway = "10.15.7.1/24"
 //      defaultGatewaySe = true
       type = "V4"
-      ipStartPool = "11"
-      ipEndPool = "50"
+      ipStartPool = "50"
+      ipEndPool = "60"
       exclude_discovered_subnets = "true"
       vcenter_dvs = "true"
       dhcp_enabled = "false"
@@ -198,8 +318,8 @@ variable "no_access_vcenter" {
         }
         data_networks = [
           {
-            name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-            defaultGateway = "10.15.4.1/24"
+            name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
+            defaultGateway = "10.15.7.1/24"
             defaultGatewaySeGroup = false
             ips = [
               "21",
@@ -208,8 +328,8 @@ variable "no_access_vcenter" {
             dhcp = false
           },
           {
-            name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
-            defaultGateway = "10.15.5.1/24"
+            name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
+            defaultGateway = "10.15.8.1/24"
             defaultGatewaySeGroup = false
             ips = [
               "21",
@@ -222,7 +342,7 @@ variable "no_access_vcenter" {
       {
         name = "n2-tkg-cluster-01"
         numberOfSe = 2
-        dhcp = false # only for management
+//        dhcp = false # only for management
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
@@ -242,9 +362,9 @@ variable "no_access_vcenter" {
         }
         data_networks = [
           {
-            name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-            defaultGateway = "10.15.4.1/24"
-            defaultGatewaySeGroup = false
+            name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
+            defaultGateway = "10.15.7.1/24"
+            defaultGatewaySeGroup = true
             ips = [
               "23",
               "24"
@@ -252,9 +372,9 @@ variable "no_access_vcenter" {
             dhcp = false
           },
           {
-            name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
-            defaultGateway = "10.15.5.1/24"
-            defaultGatewaySeGroup = true
+            name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
+            defaultGateway = "10.15.8.1/24"
+            defaultGatewaySeGroup = false
             ips = [
               "23",
               "24"

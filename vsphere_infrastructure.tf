@@ -18,10 +18,31 @@ data "vsphere_resource_pool" "pool" {
 }
 
 data "vsphere_network" "networkMgmt" {
-  depends_on = [time_sleep.wait_segment]
-  name = var.no_access_vcenter.network_management.name
+  depends_on = [time_sleep.wait_segment_nsxt]
+  name = var.nsxt.nsxt.network_management.name
   datacenter_id = data.vsphere_datacenter.dc.id
 }
+
+data "vsphere_network" "networkBackend" {
+  depends_on = [time_sleep.wait_segment_nsxt]
+  name = var.backend["network"]
+  datacenter_id = data.vsphere_datacenter.dc.id
+}
+
+resource "vsphere_folder" "folderApps" {
+  path          = var.nsxt.vcenter.folderApp
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.dc.id
+}
+
+resource "vsphere_tag_category" "ansible_group_backend" {
+  name = "ansible_group_backend"
+  cardinality = "SINGLE"
+  associable_types = [
+    "VirtualMachine",
+  ]
+}
+
 //
 //data "vsphere_network" "networkBackend" {
 //  depends_on = [time_sleep.wait_60_seconds]
