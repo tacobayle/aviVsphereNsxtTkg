@@ -73,7 +73,7 @@ variable "backend" {
     cpu = 1
     memory = 2048
     disk = 10
-    network = "N1-T1_Segment-Backend_10.7.6.0-24"
+//    network = "N1-T1_Segment-Backend_10.7.6.0-24"
     wait_for_guest_net_routable = "false"
     template_name = "ubuntu-bionic-18.04-cloudimg-template"
     netplanFile = "/etc/netplan/50-cloud-init.yaml"

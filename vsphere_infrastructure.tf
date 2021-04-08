@@ -25,7 +25,7 @@ data "vsphere_network" "networkMgmt" {
 
 data "vsphere_network" "networkBackend" {
   depends_on = [time_sleep.wait_segment_nsxt]
-  name = var.backend["network"]
+  name = var.nsxt.nsxt.network_backend.name
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
