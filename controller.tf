@@ -27,7 +27,7 @@ resource "vsphere_virtual_machine" "controller" {
 
   clone {
 //    template_uuid = vsphere_content_library_item.avi.id
-      template_uuid = data.vsphere_content_library_item.avi.id
+      template_uuid = vsphere_content_library_item.avi.id
   }
 
   tags = [

@@ -49,7 +49,7 @@ resource "vsphere_virtual_machine" "jump" {
 
   clone {
 //    template_uuid = vsphere_content_library_item.ubuntu.id
-      template_uuid = data.vsphere_content_library_item.ubuntu.id
+      template_uuid = vsphere_content_library_item.ubuntu.id
   }
 
   tags = [
