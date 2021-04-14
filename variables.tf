@@ -153,6 +153,16 @@ variable "nsxt" {
             "TIER1_LB_VIP"]
           # TIER1_LB_VIP needs to be tested - 20.1.3 TOI
           tier0 = "N2_T0"
+        },
+        {
+          name = "N2-T1_AVI_2"
+          description = "N2-T1_AVI_2"
+          route_advertisement_types = [
+            "TIER1_STATIC_ROUTES",
+            "TIER1_CONNECTED",
+            "TIER1_LB_VIP"]
+          # TIER1_LB_VIP needs to be tested - 20.1.3 TOI
+          tier0 = "N2_T0"
         }
       ]
       network_backend = {
@@ -170,12 +180,10 @@ variable "nsxt" {
           name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
           tier1 = "N2-T1_AVI_1"
           defaultGateway = "10.15.4.1/24"
-          ipStartPool = "11"
-          ipEndPool = "50"
         },
         {
           name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
-          tier1 = "N2-T1_AVI_1"
+          tier1 = "N2-T1_AVI_2"
           defaultGateway = "10.15.5.1/24"
         }
       ]
@@ -214,7 +222,7 @@ variable "nsxt" {
       },
       {
         name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
-        tier1 = "N2-T1_AVI_1"
+        tier1 = "N2-T1_AVI_2"
         defaultGateway = "10.15.5.1/24"
         ipStartPool = "11"
         ipEndPool = "50"
@@ -481,8 +489,8 @@ variable "no_access_vcenter" {
       }
       tier1s = [
         {
-          name = "N2-T1_AVI_2"
-          description = "N2-T1_AVI_2"
+          name = "N2-T1_AVI_3"
+          description = "N2-T1_AVI_3"
           route_advertisement_types = [
             "TIER1_STATIC_ROUTES",
             "TIER1_CONNECTED",
@@ -504,12 +512,12 @@ variable "no_access_vcenter" {
       networks_data = [
         {
           name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
-          tier1 = "N2-T1_AVI_2"
+          tier1 = "N2-T1_AVI_3"
           defaultGateway = "10.15.7.1/24"
         },
         {
           name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
-          tier1 = "N2-T1_AVI_2"
+          tier1 = "N2-T1_AVI_3"
           defaultGateway = "10.15.8.1/24"
         }
       ]
