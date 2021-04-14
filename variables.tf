@@ -101,7 +101,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v5.1"
+    aviConfigureTag = "v5.11"
   }
 }
 
@@ -193,9 +193,9 @@ variable "nsxt" {
         description = "TF built - Avi SE Content Library"
       }
     }
-    management_network = {
+    network_management = {
       name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
-      tier1 = "N2-T1_AVI"
+      tier1 = "N2-T1_AVI_1"
       cidr = "10.15.3.0/24"
       ipStartPool = "11"
       ipEndPool = "50"
