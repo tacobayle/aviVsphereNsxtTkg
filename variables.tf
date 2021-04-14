@@ -223,7 +223,6 @@ variable "nsxt" {
     network_backend = {
       name = "N2-T1_Segment-Backend_10.15.6.0-24"
       tier1 = "N2-T1_AVI_1"
-      cidr = "10.7.6.0/24"
     }
     serviceEngineGroup = [
       {
