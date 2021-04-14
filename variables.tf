@@ -101,7 +101,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v5.18"
+    aviConfigureTag = "v5.19"
   }
 }
 
@@ -196,7 +196,7 @@ variable "nsxt" {
     network_management = {
       name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
       tier1 = "N2-T1_AVI_1"
-      cidr = "10.15.3.0/24"
+      defaultGateway = "10.15.3.1/24"
       ipStartPool = "11"
       ipEndPool = "50"
       type = "V4"
@@ -209,11 +209,15 @@ variable "nsxt" {
         name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
         tier1 = "N2-T1_AVI_1"
         defaultGateway = "10.15.4.1/24"
+        ipStartPool = "11"
+        ipEndPool = "50"
       },
       {
         name = "N2-T1_Segment-VIP-B_10.15.5.0-24"
         tier1 = "N2-T1_AVI_1"
         defaultGateway = "10.15.5.1/24"
+        ipStartPool = "11"
+        ipEndPool = "50"
       }
     ]
     network_backend = {
