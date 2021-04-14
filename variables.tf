@@ -221,6 +221,242 @@ variable "nsxt" {
       tier1 = "N2-T1_AVI_1"
       cidr = "10.7.6.0/24"
     }
+    serviceEngineGroup = [
+      {
+        name = "Default-Group"
+        ha_mode = "HA_MODE_SHARED"
+        min_scaleout_per_vs = 2
+        buffer_se = 1
+        extra_shared_config_memory = 0
+        vcenter_folder = "Avi-SE-Default-Group"
+        vcpus_per_se = 1
+        memory_per_se = 2048
+        disk_per_se = 25
+        realtime_se_metrics = {
+          enabled = true
+          duration = 0
+        }
+      },
+      {
+        name = "seGroupCpuAutoScale"
+        ha_mode = "HA_MODE_SHARED"
+        min_scaleout_per_vs = 1
+        max_scaleout_per_vs = 2
+        max_cpu_usage = 70
+        #vs_scaleout_timeout = 30
+        buffer_se = 0
+        extra_shared_config_memory = 0
+        vcenter_folder = "Avi-SE-Autoscale"
+        vcpus_per_se = 1
+        memory_per_se = 1024
+        disk_per_se = 25
+        auto_rebalance = true
+        auto_rebalance_interval = 30
+        auto_rebalance_criteria = [
+          "SE_AUTO_REBALANCE_CPU"
+        ]
+        realtime_se_metrics = {
+          enabled = true
+          duration = 0
+        }
+      },
+      {
+        name = "seGroupGslb"
+        ha_mode = "HA_MODE_SHARED"
+        min_scaleout_per_vs = 1
+        buffer_se = 0
+        extra_shared_config_memory = 2000
+        vcenter_folder = "Avi-SE-GSLB"
+        vcpus_per_se = 2
+        memory_per_se = 8192
+        disk_per_se = 25
+        realtime_se_metrics = {
+          enabled = true
+          duration = 0
+        }
+      }
+    ]
+  }
+  httppolicyset = [
+    {
+      name = "http-request-policy-app3-content-switching-nsxt"
+      http_request_policy = {
+        rules = [
+          {
+            name = "Rule 1"
+            match = {
+              path = {
+                match_criteria = "CONTAINS"
+                match_str = ["hello", "world"]
+              }
+            }
+            rewrite_url_action = {
+              path = {
+                type = "URI_PARAM_TYPE_TOKENIZED"
+                tokens = [
+                  {
+                    type = "URI_TOKEN_TYPE_STRING"
+                    str_value = "index.html"
+                  }
+                ]
+              }
+              query = {
+                keep_query = true
+              }
+            }
+            switching_action = {
+              action = "HTTP_SWITCHING_SELECT_POOL"
+              status_code = "HTTP_LOCAL_RESPONSE_STATUS_CODE_200"
+              pool_ref = "/api/pool?name=pool1-hello-nsxt"
+            }
+          },
+          {
+            name = "Rule 2"
+            match = {
+              path = {
+                match_criteria = "CONTAINS"
+                match_str = ["avi"]
+              }
+            }
+            rewrite_url_action = {
+              path = {
+                type = "URI_PARAM_TYPE_TOKENIZED"
+                tokens = [
+                  {
+                    type = "URI_TOKEN_TYPE_STRING"
+                    str_value = ""
+                  }
+                ]
+              }
+              query = {
+                keep_query = true
+              }
+            }
+            switching_action = {
+              action = "HTTP_SWITCHING_SELECT_POOL"
+              status_code = "HTTP_LOCAL_RESPONSE_STATUS_CODE_200"
+              pool_ref = "/api/pool?name=pool2-avi-nsxt"
+            }
+          },
+        ]
+      }
+    }
+  ]
+  pools = [
+    {
+      name = "pool1-hello-nsxt"
+      lb_algorithm = "LB_ALGORITHM_ROUND_ROBIN"
+    },
+    {
+      name = "pool2-avi-nsxt"
+      application_persistence_profile_ref = "System-Persistence-Client-IP"
+      default_server_port = 8080
+    }
+  ]
+  pool_nsxt_group = {
+    name = "pool3BasedOnNsxtGroup"
+    lb_algorithm = "LB_ALGORITHM_ROUND_ROBIN"
+    nsxt_group_name = "n1-avi-backend"
+  }
+  virtualservices = {
+    http = [
+      {
+        name = "app1-hello-world-nsxt"
+        pool_ref = "pool1-hello-nsxt"
+        services: [
+          {
+            port = 80
+            enable_ssl = "false"
+          },
+          {
+            port = 443
+            enable_ssl = "true"
+          }
+        ]
+      },
+      {
+        name = "app2-avi-nsxt"
+        pool_ref = "pool2-avi-nsxt"
+        services: [
+          {
+            port = 80
+            enable_ssl = "false"
+          },
+          {
+            port = 443
+            enable_ssl = "true"
+          }
+        ]
+      },
+      {
+        name = "app3-content-switching-nsxt"
+        pool_ref = "pool2-avi-nsxt"
+        http_policies = [
+          {
+            http_policy_set_ref = "/api/httppolicyset?name=http-request-policy-app3-content-switching-nsxt"
+            index = 11
+          }
+        ]
+        services: [
+          {
+            port = 80
+            enable_ssl = "false"
+          },
+          {
+            port = 443
+            enable_ssl = "true"
+          }
+        ]
+      },
+      {
+        name = "app4-se-cpu-auto-scale-nsxt"
+        pool_ref = "pool1-hello-nsxt"
+        services: [
+          {
+            port = 80
+            enable_ssl = "false"
+          },
+          {
+            port = 443
+            enable_ssl = "true"
+          }
+        ]
+        se_group_ref: "seGroupCpuAutoScale"
+      },
+      {
+        name = "app5-nsxtGroupBased"
+        pool_ref = "pool3BasedOnNsxtGroup"
+        services: [
+          {
+            port = 80
+            enable_ssl = "false"
+          },
+          {
+            port = 443
+            enable_ssl = "true"
+          }
+        ]
+      },
+    ]
+    dns = [
+      {
+        name = "app6-dns"
+        services: [
+          {
+            port = 53
+          }
+        ]
+      },
+      {
+        name = "app7-gslb"
+        services: [
+          {
+            port = 53
+          }
+        ]
+        se_group_ref: "seGroupGslb"
+      }
+    ]
   }
 }
 
