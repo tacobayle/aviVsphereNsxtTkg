@@ -511,12 +511,12 @@ variable "no_access_vcenter" {
 //      }
       networks_data = [
         {
-          name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
+          name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
           tier1 = "N2-T1_AVI_3"
           defaultGateway = "10.15.7.1/24"
         },
         {
-          name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
+          name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
           tier1 = "N2-T1_AVI_3"
           defaultGateway = "10.15.8.1/24"
         }
@@ -539,7 +539,7 @@ variable "no_access_vcenter" {
       defaultGateway = "10.15.3.1/24"
     }
     network_vip = {
-      name = "N2-T2_Segment-VIP-A_10.15.7.0-24" # this is used for Avi IPAM profile config.
+      name = "N2-T1_Segment-VIP-A_10.15.7.0-24" # this is used for Avi IPAM profile config.
       defaultGateway = "10.15.7.1/24"
 //      defaultGatewaySe = true
       type = "V4"
@@ -572,7 +572,7 @@ variable "no_access_vcenter" {
         }
         data_networks = [
           {
-            name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
+            name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
             defaultGateway = "10.15.7.1/24"
             defaultGatewaySeGroup = false
             ips = [
@@ -582,7 +582,7 @@ variable "no_access_vcenter" {
             dhcp = false
           },
           {
-            name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
+            name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
             defaultGateway = "10.15.8.1/24"
             defaultGatewaySeGroup = false
             ips = [
@@ -616,7 +616,7 @@ variable "no_access_vcenter" {
         }
         data_networks = [
           {
-            name = "N2-T2_Segment-VIP-A_10.15.7.0-24"
+            name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
             defaultGateway = "10.15.7.1/24"
             defaultGatewaySeGroup = true
             ips = [
@@ -626,7 +626,7 @@ variable "no_access_vcenter" {
             dhcp = false
           },
           {
-            name = "N2-T2_Segment-VIP-B_10.15.8.0-24"
+            name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
             defaultGateway = "10.15.8.1/24"
             defaultGatewaySeGroup = false
             ips = [
