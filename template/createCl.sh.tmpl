@@ -1,0 +1,6 @@
+#!/bin/bash
+export GOVC_DATACENTER=${dc}
+export GOVC_URL=${vsphere_username}:${vsphere_password}@${vsphere_server}
+export GOVC_INSECURE=true
+export GOVC_DATASTORE=${datastore}
+govc library.create ${contentLibraryName}

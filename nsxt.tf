@@ -121,27 +121,21 @@ resource "nsxt_policy_segment" "networkMgmt" {
   }
 }
 
-resource "nsxt_policy_group" "backend" {
-  display_name = var.backend.nsxtGroup.name
-  description = var.backend.nsxtGroup.description
+//resource "nsxt_policy_group" "backend" {
+//  display_name = var.backend.nsxtGroup.name
+//  description = var.backend.nsxtGroup.description
+//
+//  criteria {
+//    condition {
+//      key = "Tag"
+//      member_type = "VirtualMachine"
+//      operator = "EQUALS"
+//      value = var.backend.nsxtGroup.tag
+//    }
+//  }
+//}
 
-  criteria {
-    condition {
-      key = "Tag"
-      member_type = "VirtualMachine"
-      operator = "EQUALS"
-      value = var.backend.nsxtGroup.tag
-    }
-  }
-}
 
-resource "nsxt_vm_tags" "backend" {
-  count = length(var.backendIps) - 1
-  instance_id = vsphere_virtual_machine.backend[count.index].id
-  tag {
-    tag   = var.backend.nsxtGroup.tag
-  }
-}
 
 //resource "nsxt_policy_segment" "networkMgmt" {
 //  display_name        = var.nsxt.management_network.name

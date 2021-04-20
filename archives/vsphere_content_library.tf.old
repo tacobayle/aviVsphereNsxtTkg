@@ -1,0 +1,63 @@
+//resource "vsphere_content_library" "library" {
+//  provider = "vsphere.main"
+//  name            = var.contentLibrary.name
+//  storage_backing = [data.vsphere_datastore.datastore.id]
+//}
+//
+//resource "vsphere_content_library_item" "avi" {
+//  provider = "vsphere.main"
+//  name        = basename(var.contentLibrary.avi)
+//  description = basename(var.contentLibrary.avi)
+//  library_id  = vsphere_content_library.library.id
+//  file_url = var.contentLibrary.avi
+//}
+//
+//resource "vsphere_content_library_item" "ubuntu" {
+//  provider = "vsphere.main"
+//  name        = basename(var.contentLibrary.ubuntu)
+//  description = basename(var.contentLibrary.ubuntu)
+//  library_id  = vsphere_content_library.library.id
+//  file_url = var.nsxt.vcenter.ubuntuJump
+//}
+
+//data "vsphere_content_library" library {
+//  name            = var.contentLibrary.name
+//}
+//
+//data "vsphere_content_library_item" "avi" {
+//  name       = "controller-20.1.4-9087"
+//  library_id = data.vsphere_content_library.library.id
+//  type = "ova" # required but not documented
+//}
+//
+//data "vsphere_content_library_item" "ubuntu" {
+//  name       = "bionic-server-cloudimg-amd64"
+//  library_id = data.vsphere_content_library.library.id
+//  type = "ova" # required but not documented
+//}
+
+//resource "vsphere_content_library" "libraryAviSe" {
+//  name            = var.nsxt.vcenter.content_library.name
+//  storage_backing = [data.vsphere_datastore.datastore.id]
+//  description     = var.nsxt.vcenter.content_library.description
+//}
+
+//data "template_file" "scriptLibraryAviSe" {
+//  template = file("${path.module}/template/createCl.sh.tmpl")
+//  count = length(var.nsxt.vcenters)
+//  vars = {
+//    dc        = var.nsxt.vcenters[count.index].dc
+//    vsphere_username = var.vcenter_credentials[count.index].username
+//    vsphere_password = var.vcenter_credentials[count.index].password
+//    vsphere_server  = var.nsxt.vcenters[count.index].vsphere_server
+//    datastore = var.nsxt.vcenters[count.index].datastore
+//    contentLibraryName = var.nsxt.vcenters[count.index].content_library.name
+//  }
+//}
+//
+//resource "null_resource" "createLibraryAviSe" {
+//  count = length(var.nsxt.vcenters)
+//  provisioner "local-exec" {
+//    command = "/bin/bash ${data.template_file.scriptLibraryAviSe[count.index].rendered}"
+//  }
+//}

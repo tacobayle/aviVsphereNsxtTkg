@@ -1,7 +1,8 @@
-resource "vsphere_tag" "ansible_group_jump" {
-  name             = "jump"
-  category_id      = vsphere_tag_category.ansible_group_jump.id
-}
+//resource "vsphere_tag" "ansible_group_jump" {
+//  provider = "vsphere.main"
+//  name             = "jump"
+//  category_id      = vsphere_tag_category.ansible_group_jump.id
+//}
 
 data "template_file" "jumpbox_userdata" {
   template = file("${path.module}/userdata/jump.userdata")
@@ -14,15 +15,12 @@ data "template_file" "jumpbox_userdata" {
     defaultGw = var.jump.defaultGw
     dnsMain      = var.jump.dnsMain
     netplanFile = var.jump.netplanFile
-    vsphere_user  = var.vsphere_username
-    vsphere_password = var.vsphere_password
-    vsphere_server = var.vsphere_server
     username = var.jump.username
-    privateKey = var.jump.private_key_path
   }
 }
 
 resource "vsphere_virtual_machine" "jump" {
+  provider = "vsphere.main"
   name = var.jump.name
   datastore_id = data.vsphere_datastore.datastore.id
   resource_pool_id = data.vsphere_resource_pool.pool.id
@@ -52,9 +50,9 @@ resource "vsphere_virtual_machine" "jump" {
       template_uuid = vsphere_content_library_item.ubuntu.id
   }
 
-  tags = [
-    vsphere_tag.ansible_group_jump.id,
-  ]
+//  tags = [
+//    vsphere_tag.ansible_group_jump.id,
+//  ]
 
   vapp {
     properties = {
