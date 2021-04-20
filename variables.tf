@@ -9,6 +9,8 @@ variable "nsx_server" {}
 variable "avi_username" {}
 variable "avi_password" {}
 
+variable "nsxt" {}
+
 //variable "vcenter_credentials" {}
 
 //variable "contentLibrary" {
