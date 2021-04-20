@@ -274,6 +274,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     fi
     #
     #
+    #
     if [[ $(echo $vcenter | jq -r .application) == true ]]
       then
         #

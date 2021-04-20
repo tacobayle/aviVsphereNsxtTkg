@@ -103,7 +103,7 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v5.25"
+    aviConfigureTag = "v5.26"
   }
 }
 
