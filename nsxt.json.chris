@@ -264,11 +264,6 @@
         "default_server_port": 8080
       }
     ],
-    "pool_nsxt_group": {
-      "name": "pool3BasedOnNsxtGroup",
-      "lb_algorithm": "LB_ALGORITHM_ROUND_ROBIN",
-      "nsxt_group_name": "n1-avi-backend"
-    },
     "virtualservices": {
       "http": [
         {

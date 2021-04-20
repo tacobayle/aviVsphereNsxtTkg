@@ -398,7 +398,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         #
         echo "resource \"nsxt_policy_group\" \"backend$count\" {" | tee -a nsxt_pool$count.tf
-        echo "  display_name = \"EasyAvi - Backend - vCenter$count\"" | tee -a nsxt_pool$count.tf
+        echo "  display_name = \"EasyAvi-Backend-vCenter$count\"" | tee -a nsxt_pool$count.tf
         echo "  criteria {" | tee -a nsxt_pool$count.tf
         echo "    condition {" | tee -a nsxt_pool$count.tf
         echo "      key = \"Tag\"" | tee -a nsxt_pool$count.tf
