@@ -39,8 +39,9 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     --arg cluster $(echo $vcenter | jq -r .cluster) \
     --arg datastore $(echo $vcenter | jq -r .datastore) \
     --arg count $count \
-    '{dc: $dc, cluster: $cluster, datastore: $datastore, count: $count}' | tee config.json >/dev/null
-    python3 python/template.py template/vsphere_infratructure.j2 config.json vsphere_infratructure$count.tf
+    --arg cl_se_name $(cat nsxt.json | jq -r .nsxt.cl_se_name) \
+    '{dc: $dc, cluster: $cluster, datastore: $datastore, count: $count, cl_se_name: $cl_se_name}' | tee config.json >/dev/null
+    python3 python/template.py template/vsphere_infrastructure.j2 config.json vsphere_infrastructure$count.tf
     rm config.json
     count=$((count+1))
   done
