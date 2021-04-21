@@ -52,7 +52,7 @@ resource "null_resource" "ansible" {
   provisioner "remote-exec" {
     inline      = [
       "chmod 600 ~/.ssh/${basename(var.jump.private_key_path)}",
-      "cd ${basename(var.ansible.aviConfigureUrl)} ; ansible-playbook -i hosts local.yml --extra-vars '{\"avi_username\": ${jsonencode(var.avi_username)}, \"avi_password\": ${jsonencode(var.avi_password)}, \"avi_version\": ${split("-", basename(var.nsxt.aviOva))[1]}, \"controllerPrivateIps\": ${jsonencode(vsphere_virtual_machine.controller.*.default_ip_address)}, \"controller\": ${jsonencode(var.nsxt.controller)}, \"no_access_vcenter\": ${jsonencode(var.no_access_vcenter)}, \"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"vcenter_credentials\": ${jsonencode(var.vcenter_credentials)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"nsxt\": ${jsonencode(var.nsxt)}}'",
+      "cd ${basename(var.ansible.aviConfigureUrl)} ; ansible-playbook -i hosts local.yml --extra-vars '{\"avi_username\": ${jsonencode(var.avi_username)}, \"avi_password\": ${jsonencode(var.avi_password)}, \"avi_version\": ${split("-", basename(var.nsxt.aviOva))[1]}, \"controllerPrivateIps\": ${jsonencode(vsphere_virtual_machine.controller.*.default_ip_address)}, \"controller\": ${jsonencode(var.nsxt.controller)}, \"no_access_vcenter\": ${jsonencode(var.no_access_vcenter)}, \"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"vcenter_credentials\": ${jsonencode(var.vcenter_credentials.vcenter_credentials)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"nsxt\": ${jsonencode(var.nsxt)}}'",
     ]
   }
 }
