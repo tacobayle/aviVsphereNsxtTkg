@@ -312,7 +312,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         #
         echo "data \"vsphere_folder\" \"folderApp\" {" | tee -a vsphere_infrastructure$count.tf
-        echo "path = "/$(cat nsxt.json | jq -c -r .nsxt.vcenter.dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
+        echo "path = \"/$(cat nsxt.json | jq -c -r .nsxt.vcenter.dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
         #
@@ -341,7 +341,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf
         echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf
-        echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf
+        echo "  template = file\(\"userdata/backend.userdata\"\)" | tee -a backend$count.tf
         echo "  vars = {" | tee -a backend$count.tf
         echo "    defaultGw          = split(\"/\", var.nsxt.network_backend.defaultGateway)[0]" | tee -a backend$count.tf
         echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf
