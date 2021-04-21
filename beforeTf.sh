@@ -200,7 +200,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "  clone {" | tee -a controller$count.tf
         echo "    template_uuid = vsphere_content_library_item.avi$count.id" | tee -a controller$count.tf
         echo "  }" | tee -a controller$count.tf
-        if [[ $(cat nsxt.json | jq -c -r .nsxt.controller.dhcp) == false ]]
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
         then
           echo "  vapp {" | tee -a controller$count.tf
           echo "    properties = {" | tee -a controller$count.tf
@@ -231,7 +231,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           echo "}" | tee -a jump$count.tf
           echo "" | tee -a jump$count.tf
         fi
-        if [[ $(cat nsxt.json | jq -c -r .nsxt.contrnetwork_managementoller.dhcp) == true ]]
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == true ]]
         then
           cp userdata/jump.userdata.dhcp userdata/jump.userdata
           echo "data \"template_file\" \"jumpbox_userdata\" {" | tee -a jump$count.tf
