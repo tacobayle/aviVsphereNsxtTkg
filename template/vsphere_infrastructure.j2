@@ -17,6 +17,6 @@ data "vsphere_datastore" "datastore$count" {
 
 data "vsphere_resource_pool" "pool{{ count }}" {
   provider      = vsphere.vcenter{{ count }}
-  name          = "{{ cluster }}/Resources\"
-  datacenter_id = data.vsphere_datacenter.dc${{ count }}.id
+  name          = "{{ cluster }}/Resources"
+  datacenter_id = data.vsphere_datacenter.dc{{ count }}.id
 }

@@ -59,7 +59,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     --arg datastore $(echo $vcenter | jq -r .datastore) \
     --arg count $count \
     '{dc: $dc, cluster: $cluster, datastore: $datastore, count: $count}' | tee config.json >/dev/null
-    python3 python/template.py template/vsphere_infratructure.j2 config.json vsphere_infratructure$count.tf
+    python3 python/template.py template/vsphere_infrastructure.j2 config.json vsphere_infrastructure$count.tf
     rm config.json
 #    echo "" | tee vsphere_infrastructure_other_$count.tf >/dev/null
 #    echo "provider \"vsphere\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
