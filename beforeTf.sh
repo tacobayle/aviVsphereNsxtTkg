@@ -53,34 +53,42 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     rm config.json
     #
     #
-    echo "" | tee vsphere_infrastructure$count.tf >/dev/null
-    echo "provider \"vsphere\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "data \"vsphere_datacenter\" \"dc$count\" {" | tee vsphere_infrastructure$count.tf >/dev/null
-    echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  name = $(echo $vcenter | jq .dc)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    #
-    echo "data \"vsphere_compute_cluster\" \"compute_cluster$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  name          = $(echo $vcenter | jq .cluster)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    #
-    echo "data \"vsphere_datastore\" \"datastore$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  name          = $(echo $vcenter | jq .datastore)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    #
-    echo "data \"vsphere_resource_pool\" \"pool$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  name          = \"$(echo $vcenter | jq -r .cluster)/Resources\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    jq -n \
+    --arg dc $(echo $vcenter | jq -r .dc) \
+    --arg cluster $(echo $vcenter | jq -r .cluster) \
+    --arg datastore $(echo $vcenter | jq -r .datastore) \
+    --arg count $count \
+    '{dc: $dc, cluster: $cluster, datastore: $datastore, count: $count}' | tee config.json >/dev/null
+    python3 python/template.py template/vsphere_infratructure.j2 config.json vsphere_infratructure$count.tf
+    rm config.json
+#    echo "" | tee vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "provider \"vsphere\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "data \"vsphere_datacenter\" \"dc$count\" {" | tee vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  name = $(echo $vcenter | jq .dc)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    #
+#    echo "data \"vsphere_compute_cluster\" \"compute_cluster$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  name          = $(echo $vcenter | jq .cluster)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    #
+#    echo "data \"vsphere_datastore\" \"datastore$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  name          = $(echo $vcenter | jq .datastore)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    #
+#    echo "data \"vsphere_resource_pool\" \"pool$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  name          = \"$(echo $vcenter | jq -r .cluster)/Resources\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
     #
     echo ""
     echo "++++++++++++++++++++++++++++++++"
@@ -94,12 +102,12 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
       fi
     done
     #
-    echo "resource \"vsphere_content_library\" \"libraryAviSE$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  name            = $(cat nsxt.json | jq .nsxt.cl_se_name)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "resource \"vsphere_content_library\" \"libraryAviSE$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+    echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+    echo "  name            = $(cat nsxt.json | jq .nsxt.cl_se_name)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+    echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+    echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+    echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
     #
     echo ""
     echo "++++++++++++++++++++++++++++++++"
@@ -110,14 +118,14 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
       govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(echo $seg | jq -r .vcenter_folder) > /dev/null 2>&1 || true
     done
     #
-#    echo "resource \"vsphere_folder\" \"folderSE$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-#    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-#    echo "  count         = length(var.nsxt.serviceEngineGroup)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-#    echo "  path          = var.nsxt.serviceEngineGroup[count.index].vcenter_folder" | tee -a vsphere_infrastructure$count.tf >/dev/null
-#    echo "  type          = \"vm\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
-#    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-#    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-#    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+#    echo "resource \"vsphere_folder\" \"folderSE$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  count         = length(var.nsxt.serviceEngineGroup)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  path          = var.nsxt.serviceEngineGroup[count.index].vcenter_folder" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  type          = \"vm\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#    echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
     #
     if [[ $(echo $vcenter | jq -r .avi) == true ]]
       then
@@ -142,19 +150,19 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi) > /dev/null 2>&1 || true
 #        echo "govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi) > /dev/null 2>&1 || true"
         #
-        echo "data \"vsphere_network\" \"networkMgmt$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  name          = var.nsxt.network_management.name" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "data \"vsphere_network\" \"networkMgmt$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  name          = var.nsxt.network_management.name" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
-        echo "data \"vsphere_folder\" \"folderController\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  path = \"$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi)\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "data \"vsphere_folder\" \"folderController\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  path = \"$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi)\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
         echo ""
         echo "++++++++++++++++++++++++++++++++"
@@ -168,28 +176,28 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           fi
         done
         #
-        echo "resource \"vsphere_content_library\" \"libraryAvi$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  name            = $(cat nsxt.json | jq .nsxt.cl_avi_name)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "resource \"vsphere_content_library\" \"libraryAvi$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  name            = $(cat nsxt.json | jq .nsxt.cl_avi_name)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
-        echo "resource \"vsphere_content_library_item\" \"avi$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  name            = \"$(basename $(cat nsxt.json | jq -r .nsxt.aviOva))\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  library_id      = vsphere_content_library.libraryAvi$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  file_url        = $(cat nsxt.json | jq .nsxt.aviOva)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "resource \"vsphere_content_library_item\" \"avi$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  name            = \"$(basename $(cat nsxt.json | jq -r .nsxt.aviOva))\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  library_id      = vsphere_content_library.libraryAvi$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  file_url        = $(cat nsxt.json | jq .nsxt.aviOva)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
-        echo "resource \"vsphere_content_library_item\" \"ubuntuJump$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  name            = \"$(basename $(cat nsxt.json | jq -r .nsxt.ubuntuJump))\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  library_id      = vsphere_content_library.libraryAvi$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  file_url        = $(cat nsxt.json | jq .nsxt.ubuntuJump)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "resource \"vsphere_content_library_item\" \"ubuntuJump$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  name            = \"$(basename $(cat nsxt.json | jq -r .nsxt.ubuntuJump))\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  library_id      = vsphere_content_library.libraryAvi$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  file_url        = $(cat nsxt.json | jq .nsxt.ubuntuJump)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
         #
         echo "resource \"vsphere_virtual_machine\" \"controller\" {" | tee controller$count.tf >/dev/null
@@ -330,34 +338,34 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application) > /dev/null 2>&1 || true
         #
         #
-        echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  path = \"/$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  path = \"/$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
-        echo "resource \"vsphere_content_library\" \"App$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  name            = $(cat nsxt.json | jq -c .nsxt.cl_app_name)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "resource \"vsphere_content_library\" \"App$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  name            = $(cat nsxt.json | jq -c .nsxt.cl_app_name)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
-        echo "resource \"vsphere_content_library_item\" \"ubuntu$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  name            = \"ubuntu\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  library_id      = vsphere_content_library.App$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  file_url        = $(cat nsxt.json | jq .nsxt.ubuntuApp)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "resource \"vsphere_content_library_item\" \"ubuntu$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  name            = \"ubuntu\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  library_id      = vsphere_content_library.App$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  file_url        = $(cat nsxt.json | jq .nsxt.ubuntuApp)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
-        echo "data \"vsphere_network\" \"networkBackend$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  name          = var.nsxt.network_backend.name" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+        echo "data \"vsphere_network\" \"networkBackend$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  name          = var.nsxt.network_backend.name" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
         #
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_backend.dhcp) == false ]]
