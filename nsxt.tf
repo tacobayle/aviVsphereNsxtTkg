@@ -147,15 +147,15 @@ resource "nsxt_policy_segment" "networkMgmt" {
 //  }
 //}
 
-resource "time_sleep" "wait_segment" {
-//  depends_on = [nsxt_policy_segment.networkVip, nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkMgt]
-  depends_on = [nsxt_policy_segment.networkTkg]
-  create_duration = "20s"
-}
+//resource "time_sleep" "wait_segment" {
+////  depends_on = [nsxt_policy_segment.networkVip, nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkMgt]
+//  depends_on = [nsxt_policy_segment.networkTkg]
+//  create_duration = "20s"
+//}
 
 resource "time_sleep" "wait_segment_nsxt" {
   //  depends_on = [nsxt_policy_segment.networkVip, nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkMgt]
-  depends_on = [nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt]
+  depends_on = [nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkTkg]
   create_duration = "20s"
 }
 //

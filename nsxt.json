@@ -70,7 +70,7 @@
       {
         "dc": "N2-DC",
         "cluster": "N2-Cluster1",
-        "datastore": "vsanDatastore1",
+        "datastore": "vsanDatastore",
         "vsphere_server": "10.8.0.10",
 	    "avi": true,
         "application": true

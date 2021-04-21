@@ -130,6 +130,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         echo "data \"vsphere_network\" \"networkMgmt$count\" {" | tee -a vsphere_infrastructure$count.tf
         echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
+        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure$count.tf
         echo "  name          = var.nsxt.network_management.name" | tee -a vsphere_infrastructure$count.tf
         echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
@@ -337,6 +338,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         echo "data \"vsphere_network\" \"networkBackend$count\" {" | tee -a vsphere_infrastructure$count.tf
         echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
+        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure$count.tf
         echo "  name          = var.nsxt.network_backend.name" | tee -a vsphere_infrastructure$count.tf
         echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
