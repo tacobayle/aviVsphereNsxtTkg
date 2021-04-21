@@ -74,6 +74,9 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
     echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
     #
+    echo ""
+    echo "++++++++++++++++++++++++++++++++"
+    echo "Checking for Content Library conflict name..."
     for cl in $(govc library.ls)
     do
       if [[ $(basename $cl) == $(cat nsxt.json | jq -r .nsxt.cl_se_name) ]]
@@ -90,10 +93,13 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
     echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
     #
+    echo ""
+    echo "++++++++++++++++++++++++++++++++"
+    echo "Attempt to create folder(s)"
     IFS=$'\n'
-    for seg in $(cat nsxt.json | jq -c -r .nsxt.serviceEngineGroup)
+    for seg in $(cat nsxt.json | jq -c -r .nsxt.serviceEngineGroup[])
     do
-      govc folder.create /$(echo $vcenter | jq .dc)/vm/$(echo $seg | jq .vcenter_folder) > /dev/null 2>&1 || true
+      govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(echo $seg | jq -r .vcenter_folder) > /dev/null 2>&1 || true
     done
     #
 #    echo "resource \"vsphere_folder\" \"folderSE$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
@@ -142,6 +148,9 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
         echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
         #
+        echo ""
+        echo "++++++++++++++++++++++++++++++++"
+        echo "Checking for Content Library conflict name..."
         for cl in $(govc library.ls)
         do
           if [[ $(basename $cl) == $(cat nsxt.json | jq -r .nsxt.cl_avi_name) ]]
@@ -298,6 +307,9 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           fi
         done
         #
+        echo ""
+        echo "++++++++++++++++++++++++++++++++"
+        echo "Checking for Content Library conflict name..."
         for cl in $(govc library.ls)
         do
           if [[ $(basename $cl) == $(cat nsxt.json | jq -c -r .nsxt.cl_app_name) ]]
