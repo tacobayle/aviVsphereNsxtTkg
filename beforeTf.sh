@@ -311,7 +311,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #        echo "" | tee -a vsphere_infrastructure$count.tf
         #
         #
-        echo "data \"vsphere_folder\" \"folderApp\" {" | tee -a vsphere_infrastructure$count.tf
+        echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure$count.tf
         echo "path = \"/$(echo $vcenter | jq .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
@@ -362,7 +362,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "  name              = \"backend-\${count.index}\"" | tee -a backend$count.tf
         echo "  datastore_id      = data.vsphere_datastore.datastore$count.id" | tee -a backend$count.tf
         echo "  resource_pool_id  = data.vsphere_resource_pool.pool$count.id" | tee -a backend$count.tf
-        echo "  folder            = vsphere_folder.folderApp$count.path" | tee -a backend$count.tf
+        echo "  folder            = data.vsphere_folder.folderApp$count.path" | tee -a backend$count.tf
         echo "  network_interface {" | tee -a backend$count.tf
         echo "    network_id = data.vsphere_network.networkBackend$count.id" | tee -a backend$count.tf
         echo "  }" | tee -a backend$count.tf
