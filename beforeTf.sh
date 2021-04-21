@@ -149,7 +149,6 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #          fi
 #        done
         echo "resource \"vsphere_content_library\" \"libraryAvi$count\" {" | tee -a vsphere_infrastructure$count.tf
-        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  name            = $(cat nsxt.json | jq .nsxt.cl_avi_name)" | tee -a vsphere_infrastructure$count.tf
         echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure$count.tf
