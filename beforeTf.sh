@@ -349,7 +349,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           echo "    defaultGw          = split(\"/\", var.nsxt.network_backend.defaultGateway)[0]" | tee -a backend$count.tf
           echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf
           echo "    ip                 = cidrhost("var.nsxt.network_backend.defaultGateway", element(var.nsxt.network_backend.backend_ips, count.index + $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter)))))" | tee -a backend$count.tf
-          echo "    subnetMask         = split(\"/\", var.nsxt.network_backend.defaultGateway)[1]" | tee -a backend$count.tf
+          echo "    mask               = split(\"/\", var.nsxt.network_backend.defaultGateway)[1]" | tee -a backend$count.tf
           echo "    netplanFile        = var.backend.netplanFile" | tee -a backend$count.tf
           echo "    dns                = var.nsxt.network_backend.dns" | tee -a backend$count.tf
           echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf
