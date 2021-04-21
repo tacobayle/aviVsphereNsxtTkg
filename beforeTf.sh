@@ -217,16 +217,17 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         then
           cp userdata/jump.userdata.static userdata/jump.userdata
           echo "data \"template_file\" \"jump$count\" {" | tee -a jump$count.tf >/dev/null
-          echo "vars = {" | tee -a jump$count.tf >/dev/null
-          echo "  pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
-          echo "  aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
-          echo "  ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
-          echo "  username = var.jump.username" | tee -a jump$count.tf >/dev/null
-          echo "  ip = cidrhost(var.nsxt.network_management.defaultGateway, var.nsxt.network_management.jump_ip)" | tee -a jump$count.tf >/dev/null
-          echo "  mask = split(\"/\", var.nsxt.network_management.defaultGateway)[1]" | tee -a jump$count.tf >/dev/null
-          echo "  defaultGw = split(\"/\", var.nsxt.network_management.defaultGateway)[0]" | tee -a jump$count.tf >/dev/null
-          echo "  netplanFile = var.jump.netplanFile" | tee -a jump$count.tf >/dev/null
-          echo "  dns = var.nsxt.network_management.dns" | tee -a jump$count.tf >/dev/null
+          echo "  template = file(\"userdata/jump.userdata\")" | tee -a jump$count.tf >/dev/null
+          echo "  vars = {" | tee -a jump$count.tf >/dev/null
+          echo "    pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
+          echo "    aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
+          echo "    ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
+          echo "    username = var.jump.username" | tee -a jump$count.tf >/dev/null
+          echo "    ip = cidrhost(var.nsxt.network_management.defaultGateway, var.nsxt.network_management.jump_ip)" | tee -a jump$count.tf >/dev/null
+          echo "    mask = split(\"/\", var.nsxt.network_management.defaultGateway)[1]" | tee -a jump$count.tf >/dev/null
+          echo "    defaultGw = split(\"/\", var.nsxt.network_management.defaultGateway)[0]" | tee -a jump$count.tf >/dev/null
+          echo "    netplanFile = var.jump.netplanFile" | tee -a jump$count.tf >/dev/null
+          echo "    dns = var.nsxt.network_management.dns" | tee -a jump$count.tf >/dev/null
           echo "  }" | tee -a jump$count.tf >/dev/null
           echo "}" | tee -a jump$count.tf >/dev/null
           echo "" | tee -a jump$count.tf >/dev/null
@@ -235,11 +236,12 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         then
           cp userdata/jump.userdata.dhcp userdata/jump.userdata
           echo "data \"template_file\" \"jumpbox_userdata\" {" | tee -a jump$count.tf >/dev/null
-          echo "vars = {" | tee -a jump$count.tf >/dev/null
-          echo "  pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
-          echo "  aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
-          echo "  ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
-          echo "  username = var.jump.username" | tee -a jump$count.tf >/dev/null
+          echo "  template = file(\"userdata/jump.userdata\")" | tee -a jump$count.tf >/dev/null
+          echo "  vars = {" | tee -a jump$count.tf >/dev/null
+          echo "    pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
+          echo "    aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
+          echo "    ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
+          echo "    username = var.jump.username" | tee -a jump$count.tf >/dev/null
           echo "  }" | tee -a jump$count.tf >/dev/null
           echo "}" | tee -a jump$count.tf >/dev/null
           echo "" | tee -a jump$count.tf >/dev/null
@@ -405,7 +407,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "    }" | tee -a backend$count.tf >/dev/null
         echo "  }" | tee -a backend$count.tf >/dev/null
         echo "  connection {" | tee -a backend$count.tf >/dev/null
-        echo "    host        = cidrhost(\"var.nsxt.network_backend.defaultGateway\", count.index + $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter))))" | tee -a backend$count.tf >/dev/null
+        echo "    host        = self.default_ip_address" | tee -a backend$count.tf >/dev/null
         echo "    type        = \"ssh\"" | tee -a backend$count.tf >/dev/null
         echo "    agent       = false" | tee -a backend$count.tf >/dev/null
         echo "    user        = var.backend.username" | tee -a backend$count.tf >/dev/null
