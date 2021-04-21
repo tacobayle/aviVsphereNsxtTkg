@@ -9,7 +9,7 @@ data "vsphere_compute_cluster" "compute_cluster{{ count }}" {
   datacenter_id = data.vsphere_datacenter.dc{{ count }}.id
 }
 
-data "vsphere_datastore" "datastore$count" {
+data "vsphere_datastore" "datastore{{ count }}" {
   provider      = vsphere.vcenter{{ count }}
   name          = "{{ datastore }}"
   datacenter_id = data.vsphere_datacenter.dc{{ count }}.id
