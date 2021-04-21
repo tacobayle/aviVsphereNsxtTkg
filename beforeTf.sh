@@ -34,15 +34,23 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
       echo "ERROR: vCenter connectivity issue - please check that you have Internet connectivity and please check that vCenter API endpoint is reachable from this EasyAvi appliance"
       exit 1
     fi
-    echo "" | tee provider_vcenter$count.tf >/dev/null
-    echo "provider \"vsphere\" {" | tee -a provider_vcenter$count.tf >/dev/null
-    echo "  user                 = $(echo $vcenter_credentials | jq ".vcenter_credentials[$count] .username")" | tee -a provider_vcenter$count.tf >/dev/null
-    echo "  password             = $(echo $vcenter_credentials | jq ".vcenter_credentials[$count] .password")" | tee -a provider_vcenter$count.tf >/dev/null
-    echo "  vsphere_server       = $(echo $vcenter | jq .vsphere_server)" | tee -a provider_vcenter$count.tf >/dev/null
-    echo "  alias                = \"vcenter$(echo $count)\""  | tee -a provider_vcenter$count.tf >/dev/null
-    echo "  allow_unverified_ssl = true"  | tee -a provider_vcenter$count.tf >/dev/null
-    echo "}" | tee -a provider_vcenter$count.tf >/dev/null
-    echo "" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "" | tee provider_vcenter$count.tf >/dev/null
+#    echo "provider \"vsphere\" {" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "  user                 = $(echo $vcenter_credentials | jq ".vcenter_credentials[$count] .username")" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "  password             = $(echo $vcenter_credentials | jq ".vcenter_credentials[$count] .password")" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "  vsphere_server       = $(echo $vcenter | jq .vsphere_server)" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "  alias                = \"vcenter$(echo $count)\""  | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "  allow_unverified_ssl = true"  | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "}" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "" | tee -a provider_vcenter$count.tf >/dev/null
+    jq -n \
+    --arg user $(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .username") \
+    --arg password $(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .password") \
+    --arg vsphere_server $(echo $vcenter | jq -r .vsphere_server) \
+    --arg alias $count \
+    '{user: $user, password: $password, vsphere_server: $vsphere_server, alias: $alias}' | tee config.json >/dev/null
+    python3 python/template.py template/provider_vcenter.j2 config.json provider_vcenter$count.tf
+    rm config.json
     #
     #
     echo "" | tee vsphere_infrastructure$count.tf >/dev/null

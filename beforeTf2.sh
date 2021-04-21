@@ -42,4 +42,5 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     '{user: $user, password: $password, vsphere_server: $vsphere_server, alias: $alias}' | tee config.json >/dev/null
     python3 python/template.py template/provider_vcenter.j2 config.json provider_vcenter$count.tf
     rm config.json
+    count=$((count+1))
   done

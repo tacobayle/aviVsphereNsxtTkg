@@ -1,0 +1,27 @@
+    echo "provider \"vsphere\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "data \"vsphere_datacenter\" \"dc$count\" {" | tee vsphere_infrastructure$count.tf >/dev/null
+    echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  name = $(echo $vcenter | jq .dc)" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    #
+    echo "data \"vsphere_compute_cluster\" \"compute_cluster$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  name          = $(echo $vcenter | jq .cluster)" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    #
+    echo "data \"vsphere_datastore\" \"datastore$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  name          = $(echo $vcenter | jq .datastore)" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    #
+    echo "data \"vsphere_resource_pool\" \"pool$count\" {" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  name          = \"$(echo $vcenter | jq -r .cluster)/Resources\"" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "}" | tee -a vsphere_infrastructure$count.tf >/dev/null
+    echo "" | tee -a vsphere_infrastructure$count.tf >/dev/null

@@ -81,7 +81,7 @@
         "datastore": "vsanDatastore2",
         "vsphere_server": "2.2.2.2",
         "avi": false,
-        "application": true,
+        "application": true
       },
       {
         "dc": "N3-DC",
@@ -89,7 +89,7 @@
         "datastore": "vsanDatastore3",
         "vsphere_server": "3.3.3.3",
         "avi": false,
-        "application": true,
+        "application": true
       }
     ],
     "controller": {
