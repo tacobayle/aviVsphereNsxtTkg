@@ -1,182 +1,371 @@
-data "nsxt_policy_transport_zone" "tz" {
-  display_name = var.no_access_vcenter.nsxt.transport_zone.name
-}
-
-data "nsxt_policy_transport_zone" "tz_nsxt" {
-  display_name = var.nsxt.nsxt.transport_zone.name
-}
-
-data "nsxt_policy_tier0_gateway" "tier0" {
-  count = length(var.no_access_vcenter.nsxt.tier1s)
-  display_name = var.no_access_vcenter.nsxt.tier1s[count.index].tier0
-}
-
-data "nsxt_policy_tier0_gateway" "tier0_nsxt" {
-  count = length(var.nsxt.nsxt.tier1s)
-  display_name = var.nsxt.nsxt.tier1s[count.index].tier0
-}
-
-resource "nsxt_policy_tier1_gateway" "tier1_gw" {
-  count = length(var.no_access_vcenter.nsxt.tier1s)
-  description               = var.no_access_vcenter.nsxt.tier1s[count.index].description
-  display_name              = var.no_access_vcenter.nsxt.tier1s[count.index].name
-  tier0_path                = data.nsxt_policy_tier0_gateway.tier0[count.index].path
-  route_advertisement_types = var.no_access_vcenter.nsxt.tier1s[count.index].route_advertisement_types
-}
-
-resource "nsxt_policy_tier1_gateway" "tier1_gw_nsxt" {
-  count = length(var.nsxt.nsxt.tier1s)
-  description               = var.nsxt.nsxt.tier1s[count.index].description
-  display_name              = var.nsxt.nsxt.tier1s[count.index].name
-  tier0_path                = data.nsxt_policy_tier0_gateway.tier0_nsxt[count.index].path
-  route_advertisement_types = var.nsxt.nsxt.tier1s[count.index].route_advertisement_types
-}
-
-resource "time_sleep" "wait_tier1" {
-  depends_on = [nsxt_policy_tier1_gateway.tier1_gw]
-  create_duration = "10s"
-}
-
-resource "time_sleep" "wait_tier1_nsxt" {
-  depends_on = [nsxt_policy_tier1_gateway.tier1_gw_nsxt]
-  create_duration = "10s"
-}
-
-data "nsxt_policy_tier1_gateway" "avi_network_backend_tier1_router_nsxt" {
-  depends_on = [time_sleep.wait_tier1_nsxt]
-  display_name = var.nsxt.nsxt.network_backend.tier1
-}
-
-resource "nsxt_policy_segment" "networkBackend" {
-  display_name        = var.nsxt.nsxt.network_backend.name
-  connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_backend_tier1_router_nsxt.path
-  transport_zone_path = data.nsxt_policy_transport_zone.tz_nsxt.path
-  description         = "Network Segment built by Terraform"
-  subnet {
-    cidr        = var.nsxt.nsxt.network_backend.cidr
-  }
-}
-
-//data "nsxt_policy_tier1_gateway" "avi_network_backend_tier1_router" {
-//  depends_on = [time_sleep.wait_tier1]
-//  display_name = var.nsxt.network_backend.tier1
-//}
-
-//data "nsxt_policy_tier1_gateway" "avi_network_mgmt_tier1_router" {
-//  depends_on = [time_sleep.wait_tier1]
-//  display_name = var.no_access_vcenter.nsxt.network_management.tier1
-//}
-
-data "nsxt_policy_tier1_gateway" "avi_network_mgmt_tier1_router_nsxt" {
-  depends_on = [time_sleep.wait_tier1_nsxt]
-  display_name = var.nsxt.nsxt.network_management.tier1
-}
-
-//data "nsxt_policy_tier1_gateway" "avi_network_mgt" {
-//  depends_on = [time_sleep.wait_tier1]
-//  display_name = var.no_access_vcenter.nsxt.network_management.tier1
-//}
-
-data "nsxt_policy_tier1_gateway" "avi_network_vip_tier1_router_nsxt" {
-  count = length(var.nsxt.nsxt.networks_data)
-  depends_on = [time_sleep.wait_tier1_nsxt]
-  display_name = var.nsxt.nsxt.networks_data[count.index].tier1
-}
-
-data "nsxt_policy_tier1_gateway" "avi_network_vip_tier1_router_tkg" {
-  count = length(var.no_access_vcenter.nsxt.networks_data)
-  depends_on = [time_sleep.wait_tier1]
-  display_name = var.no_access_vcenter.nsxt.networks_data[count.index].tier1
-}
-
-resource "nsxt_policy_segment" "networkVip" {
-  count = length(var.nsxt.nsxt.networks_data)
-  display_name        = var.nsxt.nsxt.networks_data[count.index].name
-  connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_vip_tier1_router_nsxt[count.index].path
-  transport_zone_path = data.nsxt_policy_transport_zone.tz_nsxt.path
-  description         = "Network Segment built by Terraform"
-  subnet {
-    cidr        = var.nsxt.nsxt.networks_data[count.index].defaultGateway
+{
+  "nsxt": {
+    "name": "cloudNsxt",
+    "dhcp_enabled": "false",
+    "obj_name_prefix": "AVINSXT",
+    "backend_per_vcenter": 3,
+    "domains": [
+      {
+        "name": "nsxt.altherr.info"
+      }
+    ],
+    "nsxt": {
+      "transport_zone": {
+        "name": "N2_TZ_nested_nsx-overlay"
+      },
+      "tier1s": [
+        {
+          "name": "N2-T1_AVI_1",
+          "description": "N2-T1_AVI_1",
+          "route_advertisement_types": [
+            "TIER1_STATIC_ROUTES",
+            "TIER1_CONNECTED",
+            "TIER1_LB_VIP"
+          ],
+          "tier0": "N2_T0"
+        },
+        {
+          "name": "N2-T1_AVI_2",
+          "description": "N2-T1_AVI_2",
+          "route_advertisement_types": [
+            "TIER1_STATIC_ROUTES",
+            "TIER1_CONNECTED",
+            "TIER1_LB_VIP"
+          ],
+          "tier0": "N2_T0"
+        }
+      ],
+      "network_backend": {
+        "name": "N2-T1_Segment-Backend_10.15.6.0-24",
+        "tier1": "N2-T1_AVI_1",
+        "cidr": "10.15.6.1/24"
+      },
+      "network_management": {
+        "name": "N2-T1_Segment-Mgmt-10.15.3.0-24",
+        "tier1": "N2-T1_AVI_1",
+        "defaultGateway": "10.15.3.1/24"
+      },
+      "networks_data": [
+        {
+          "name": "N2-T1_Segment-VIP-A_10.15.4.0-24",
+          "tier1": "N2-T1_AVI_1",
+          "defaultGateway": "10.15.4.1/24"
+        },
+        {
+          "name": "N2-T1_Segment-VIP-B_10.15.5.0-24",
+          "tier1": "N2-T1_AVI_2",
+          "defaultGateway": "10.15.5.1/24"
+        }
+      ]
+    },
+    "folder_avi": "Avi-Controllers",
+    "folder_application": "EasyAvi-Apps",
+    "ubuntuJump": "/home/christoph/Downloads/bionic-server-cloudimg-amd64.ova",
+    "ubuntuApp": "/home/christoph/Downloads/bionic-server-cloudimg-amd64.ova",
+    "aviOva": "/home/christoph/Downloads/controller-20.1.4-9087.ova",
+    "cl_app_name": "EasyAvi-CL-App",
+    "cl_avi_name": "EasyAvi-CL-Avi",
+    "cl_se_name": "EasyAvi-CL-SE",
+    "vcenters": [
+      {
+        "dc": "N1-DC",
+        "cluster": "N1-Cluster1",
+        "datastore": "vsanDatastore1",
+        "vsphere_server": "1.1.1.1",
+	    "avi": true,
+        "application": false
+      },
+      {
+        "dc": "N2-DC",
+        "cluster": "N2-Cluster2",
+        "datastore": "vsanDatastore2",
+        "vsphere_server": "2.2.2.2",
+        "avi": false,
+        "application": true,
+      },
+      {
+        "dc": "N3-DC",
+        "cluster": "N3-Cluster3",
+        "datastore": "vsanDatastore3",
+        "vsphere_server": "3.3.3.3",
+        "avi": false,
+        "application": true,
+      }
+    ],
+    "controller": {
+      "cpu": 8,
+      "memory": 24768,
+      "disk": 128,
+      "cluster": false,
+      "wait_for_guest_net_timeout": 2,
+      "environment": "VMWARE",
+      "dns":  ["8.8.8.8", "8.8.4.4"],
+      "ntp": ["95.81.173.155", "188.165.236.162"],
+      "floatingIp": "1.1.1.1",
+      "from_email": "avicontroller@vmc.local",
+      "se_in_provider_context": "false",
+      "tenant_access_to_provider_se": "true",
+      "tenant_vrf": "false",
+      "dhcp": false,
+      "floating_ip": false,
+      "aviCredsJsonFile": "~/.creds.json"
+    },
+    "network_management": {
+      "name": "N2-T1_Segment-Mgmt-10.15.3.0-24",
+      "tier1": "N2-T1_AVI_1",
+      "defaultGateway": "10.15.3.1/24",
+      "ipStartPool": "11",
+      "ipEndPool": "50",
+      "type": "V4",
+      "dhcp_enabled": "no",
+      "exclude_discovered_subnets": "true",
+      "vcenter_dvs": "true",
+      "avi_ctrl_mgmt_ips": ["201"],
+      "jump_ip": "210",
+      "dns": "172.18.0.15"
+    },
+    "networks_data": [
+      {
+        "name": "N2-T1_Segment-VIP-A_10.15.4.0-24",
+        "tier1": "N2-T1_AVI_1",
+        "defaultGateway": "10.15.4.1/24",
+        "ipStartPool": "11",
+        "ipEndPool": "50"
+      },
+      {
+        "name": "N2-T1_Segment-VIP-B_10.15.5.0-24",
+        "tier1": "N2-T1_AVI_2",
+        "defaultGateway": "10.15.5.1/24",
+        "ipStartPool": "11",
+        "ipEndPool": "50"
+      }
+    ],
+    "network_backend": {
+      "name": "N2-T1_Segment-Backend_10.15.6.0-24",
+      "tier1": "N2-T1_AVI_1",
+      "ips": ["10", "11", "12", "13", "14", "15"],
+      "defaultGateway": "10.15.6.1/24"
+    },
+    "serviceEngineGroup": [
+      {
+        "name": "Default-Group",
+        "ha_mode": "HA_MODE_SHARED",
+        "min_scaleout_per_vs": 2,
+        "buffer_se": 1,
+        "extra_shared_config_memory": 0,
+        "vcenter_folder": "Avi-SE-Default-Group",
+        "vcpus_per_se": 1,
+        "memory_per_se": 2048,
+        "disk_per_se": 25,
+        "realtime_se_metrics": {
+          "enabled": true,
+          "duration": 0
+        }
+      },
+      {
+        "name": "seGroupCpuAutoScale",
+        "ha_mode": "HA_MODE_SHARED",
+        "min_scaleout_per_vs": 1,
+        "max_scaleout_per_vs": 2,
+        "max_cpu_usage": 70,
+        "buffer_se": 0,
+        "extra_shared_config_memory": 0,
+        "vcenter_folder": "Avi-SE-Autoscale",
+        "vcpus_per_se": 1,
+        "memory_per_se": 1024,
+        "disk_per_se": 25,
+        "auto_rebalance": true,
+        "auto_rebalance_interval": 30,
+        "auto_rebalance_criteria": [
+          "SE_AUTO_REBALANCE_CPU"
+        ],
+        "realtime_se_metrics": {
+          "enabled": true,
+          "duration": 0
+        }
+      },
+      {
+        "name": "seGroupGslb",
+        "ha_mode": "HA_MODE_SHARED",
+        "min_scaleout_per_vs": 1,
+        "buffer_se": 0,
+        "extra_shared_config_memory": 2000,
+        "vcenter_folder": "Avi-SE-GSLB",
+        "vcpus_per_se": 2,
+        "memory_per_se": 8192,
+        "disk_per_se": 25,
+        "realtime_se_metrics": {
+          "enabled": true,
+          "duration": 0
+        }
+      }
+    ],
+    "httppolicyset": [
+      {
+        "name": "http-request-policy-app3-content-switching-nsxt",
+        "http_request_policy": {
+          "rules": [
+            {
+              "name": "Rule 1",
+              "match": {
+                "path": {
+                  "match_criteria": "CONTAINS",
+                  "match_str": [
+                    "hello",
+                    "world"
+                  ]
+                }
+              },
+              "rewrite_url_action": {
+                "path": {
+                  "type": "URI_PARAM_TYPE_TOKENIZED",
+                  "tokens": [
+                    {
+                      "type": "URI_TOKEN_TYPE_STRING",
+                      "str_value": "index.html"
+                    }
+                  ]
+                },
+                "query": {
+                  "keep_query": true
+                }
+              },
+              "switching_action": {
+                "action": "HTTP_SWITCHING_SELECT_POOL",
+                "status_code": "HTTP_LOCAL_RESPONSE_STATUS_CODE_200",
+                "pool_ref": "/api/pool?name=pool1-hello-nsxt"
+              }
+            },
+            {
+              "name": "Rule 2",
+              "match": {
+                "path": {
+                  "match_criteria": "CONTAINS",
+                  "match_str": [
+                    "avi"
+                  ]
+                }
+              },
+              "rewrite_url_action": {
+                "path": {
+                  "type": "URI_PARAM_TYPE_TOKENIZED",
+                  "tokens": [
+                    {
+                      "type": "URI_TOKEN_TYPE_STRING",
+                      "str_value": ""
+                    }
+                  ]
+                },
+                "query": {
+                  "keep_query": true
+                }
+              },
+              "switching_action": {
+                "action": "HTTP_SWITCHING_SELECT_POOL",
+                "status_code": "HTTP_LOCAL_RESPONSE_STATUS_CODE_200",
+                "pool_ref": "/api/pool?name=pool2-avi-nsxt"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "pools": [
+      {
+        "name": "pool1-hello-nsxt",
+        "lb_algorithm": "LB_ALGORITHM_ROUND_ROBIN"
+      },
+      {
+        "name": "pool2-avi-nsxt",
+        "application_persistence_profile_ref": "System-Persistence-Client-IP",
+        "default_server_port": 8080
+      }
+    ],
+    "virtualservices": {
+      "http": [
+        {
+          "name": "app1-hello-world-nsxt",
+          "pool_ref": "pool1-hello-nsxt",
+          "services": [
+            {
+              "port": 80,
+              "enable_ssl": "false"
+            },
+            {
+              "port": 443,
+              "enable_ssl": "true"
+            }
+          ]
+        },
+        {
+          "name": "app2-avi-nsxt",
+          "pool_ref": "pool2-avi-nsxt",
+          "services": [
+            {
+              "port": 80,
+              "enable_ssl": "false"
+            },
+            {
+              "port": 443,
+              "enable_ssl": "true"
+            }
+          ]
+        },
+        {
+          "name": "app3-content-switching-nsxt",
+          "pool_ref": "pool2-avi-nsxt",
+          "http_policies": [
+            {
+              "http_policy_set_ref": "/api/httppolicyset?name=http-request-policy-app3-content-switching-nsxt",
+              "index": 11
+            }
+          ],
+          "services": [
+            {
+              "port": 80,
+              "enable_ssl": "false"
+            },
+            {
+              "port": 443,
+              "enable_ssl": "true"
+            }
+          ]
+        },
+        {
+          "name": "app4-se-cpu-auto-scale-nsxt",
+          "pool_ref": "pool1-hello-nsxt",
+          "services": [
+            {
+              "port": 80,
+              "enable_ssl": "false"
+            },
+            {
+              "port": 443,
+              "enable_ssl": "true"
+            }
+          ],
+          "se_group_ref": "seGroupCpuAutoScale"
+        }
+      ],
+      "dns": [
+        {
+          "name": "app6-dns",
+          "services": [
+            {
+              "port": 53
+            }
+          ]
+        },
+        {
+          "name": "app7-gslb",
+          "services": [
+            {
+              "port": 53
+            }
+          ],
+          "se_group_ref": "seGroupGslb"
+        }
+      ]
     }
-}
-
-resource "nsxt_policy_segment" "networkTkg" {
-  count = length(var.no_access_vcenter.nsxt.networks_data)
-  display_name        = var.no_access_vcenter.nsxt.networks_data[count.index].name
-  connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_vip_tier1_router_tkg[count.index].path
-  transport_zone_path = data.nsxt_policy_transport_zone.tz.path
-  description         = "Network Segment built by Terraform"
-  subnet {
-    cidr        = var.no_access_vcenter.nsxt.networks_data[count.index].defaultGateway
   }
 }
-
-resource "nsxt_policy_segment" "networkMgmt" {
-  display_name        = var.nsxt.nsxt.network_management.name
-  connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_mgmt_tier1_router_nsxt.path
-  transport_zone_path = data.nsxt_policy_transport_zone.tz.path
-  description         = "Network Segment built by Terraform"
-  subnet {
-    cidr        = var.nsxt.nsxt.network_management.defaultGateway
-  }
-}
-
-//resource "nsxt_policy_group" "backend" {
-//  display_name = var.backend.nsxtGroup.name
-//  description = var.backend.nsxtGroup.description
-//
-//  criteria {
-//    condition {
-//      key = "Tag"
-//      member_type = "VirtualMachine"
-//      operator = "EQUALS"
-//      value = var.backend.nsxtGroup.tag
-//    }
-//  }
-//}
-
-
-
-//resource "nsxt_policy_segment" "networkMgmt" {
-//  display_name        = var.nsxt.management_network.name
-//  connectivity_path   = data.nsxt_policy_tier1_gateway.avi_network_mgmt_tier1_router.path
-//  transport_zone_path = data.nsxt_policy_transport_zone.tz.path
-//  description         = "Network Segment built by Terraform"
-//  subnet {
-//    cidr        = "${cidrhost(var.nsxt.management_network.cidr, 1)}/${split("/", var.nsxt.management_network.cidr)[1]}"
-//  }
-//}
-
-//resource "time_sleep" "wait_segment" {
-////  depends_on = [nsxt_policy_segment.networkVip, nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkMgt]
-//  depends_on = [nsxt_policy_segment.networkTkg]
-//  create_duration = "20s"
-//}
-
-resource "time_sleep" "wait_segment_nsxt" {
-  //  depends_on = [nsxt_policy_segment.networkVip, nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkMgt]
-  depends_on = [nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkTkg]
-  create_duration = "20s"
-}
-//
-//resource "nsxt_policy_group" "backend" {
-//  display_name = var.backend.nsxtGroup.name
-//  description = var.backend.nsxtGroup.description
-//
-//  criteria {
-//    condition {
-//      key = "Tag"
-//      member_type = "VirtualMachine"
-//      operator = "EQUALS"
-//      value = var.backend.nsxtGroup.tag
-//    }
-//  }
-//}
-//
-//resource "nsxt_vm_tags" "backend" {
-//  count = length(var.backendIps)
-//  instance_id = vsphere_virtual_machine.backend[count.index].id
-//  tag {
-//    tag   = var.backend.nsxtGroup.tag
-//  }
-//}

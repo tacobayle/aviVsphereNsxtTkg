@@ -70,7 +70,7 @@
       {
         "dc": "N2-DC",
         "cluster": "N2-Cluster1",
-        "datastore": "vsanDatastore1",
+        "datastore": "vsanDatastore",
         "vsphere_server": "10.8.0.10",
 	    "avi": true,
         "application": true
@@ -90,7 +90,6 @@
       "se_in_provider_context": "false",
       "tenant_access_to_provider_se": "true",
       "tenant_vrf": "false",
-      "dhcp": false,
       "floating_ip": false,
       "aviCredsJsonFile": "~/.creds.json"
     },
@@ -106,7 +105,8 @@
       "vcenter_dvs": "true",
       "avi_ctrl_mgmt_ips": ["201"],
       "jump_ip": "210",
-      "dns": "172.18.0.15"
+      "dns": "172.18.0.15",
+      "dhcp": false
     },
     "networks_data": [
       {
@@ -128,7 +128,10 @@
       "name": "N2-T1_Segment-Backend_10.15.6.0-24",
       "tier1": "N2-T1_AVI_1",
       "ips": ["10", "11", "12", "13", "14", "15"],
-      "defaultGateway": "10.15.6.1/24"
+      "defaultGateway": "10.15.6.1/24",
+      "dns": "172.18.0.15",
+      "backend_ips": ["10", "11", "12"],
+      "dhcp": false
     },
     "serviceEngineGroup": [
       {
