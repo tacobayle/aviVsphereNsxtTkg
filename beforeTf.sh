@@ -24,16 +24,16 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     export GOVC_URL=$(echo $TF_VAR_vcenter_credentials | jq -r ".TF_VAR_vcenter_credentials[$count] .username"):$(echo $TF_VAR_vcenter_credentials | jq -r ".TF_VAR_vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
     export GOVC_INSECURE=true
     export GOVC_DATASTORE=$(echo $vcenter | jq -r .datastore)
-#    echo ""
-#    echo "++++++++++++++++++++++++++++++++"
-#    echo "Checking for vCenter Connectivity..."
-#    govc find / -type m > /dev/null 2>&1
-#    status=$?
-#    if [[ $status -ne 0 ]]
-#    then
-#      echo "ERROR: vCenter connectivity issue - please check that you have Internet connectivity and please check that vCenter API endpoint is reachable from this EasyAvi appliance"
-#      exit 1
-#    fi
+    echo ""
+    echo "++++++++++++++++++++++++++++++++"
+    echo "Checking for vCenter Connectivity..."
+    govc find / -type m > /dev/null 2>&1
+    status=$?
+    if [[ $status -ne 0 ]]
+    then
+      echo "ERROR: vCenter connectivity issue - please check that you have Internet connectivity and please check that vCenter API endpoint is reachable from this EasyAvi appliance"
+      exit 1
+    fi
     echo "" | tee provider_vcenter$count.tf
     echo "provider \"vsphere\" {" | tee -a provider_vcenter$count.tf
     echo "  user                 = $(echo $vcenter_credentials | jq ".vcenter_credentials[$count] .username")" | tee -a provider_vcenter$count.tf
@@ -74,14 +74,14 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     echo "}" | tee -a vsphere_infrastructure$count.tf
     echo "" | tee -a vsphere_infrastructure$count.tf
     #
-#    for cl in $(govc library.ls)
-#    do
-#      if [[ $(basename $cl) == $(cat nsxt.json | jq -r .nsxt.cl_se_name) ]]
-#      then
-#        echo "ERROR: There is a Content Library called $(basename $cl) which will conflict with this deployment - please remove it before trying another attempt"
-#        beforeTfError=1
-#      fi
-#    done
+    for cl in $(govc library.ls)
+    do
+      if [[ $(basename $cl) == $(cat nsxt.json | jq -r .nsxt.cl_se_name) ]]
+      then
+        echo "ERROR: There is a Content Library called $(basename $cl) which will conflict with this deployment - please remove it before trying another attempt"
+        beforeTfError=1
+      fi
+    done
     #
     echo "resource \"vsphere_content_library\" \"libraryAviSE$count\" {" | tee -a vsphere_infrastructure$count.tf
     echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
@@ -90,11 +90,11 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     echo "}" | tee -a vsphere_infrastructure$count.tf
     echo "" | tee -a vsphere_infrastructure$count.tf
     #
-#    IFS=$'\n'
-#    for seg in $(cat nsxt.json | jq -c -r .nsxt.serviceEngineGroup)
-#    do
-#      govc folder.create /$(echo $vcenter | jq .dc)/vm/$(echo $seg | jq .vcenter_folder) > /dev/null 2>&1 || true
-#    done
+    IFS=$'\n'
+    for seg in $(cat nsxt.json | jq -c -r .nsxt.serviceEngineGroup)
+    do
+      govc folder.create /$(echo $vcenter | jq .dc)/vm/$(echo $seg | jq .vcenter_folder) > /dev/null 2>&1 || true
+    done
     #
 #    echo "resource \"vsphere_folder\" \"folderSE$count\" {" | tee -a vsphere_infrastructure$count.tf
 #    echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
@@ -108,22 +108,22 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     if [[ $(echo $vcenter | jq -r .avi) == true ]]
       then
         IFS=$'\n'
-#        echo ""
-#        echo "++++++++++++++++++++++++++++++++"
-#        echo "Checking for VM conflict name..."
-#        for vm in $(govc find / -type m)
-#        do
-#          if [[ $(basename $vm) == jump ]]
-#          then
-#            echo "ERROR: There is a VM called $(basename $vm) which will conflict with this deployment - please remove it before trying another attempt"
-#            beforeTfError=1
-#          fi
-#          if [[ $(basename $vm) == $(basename $(cat nsxt.json | jq -r .nsxt.aviOva) .ova)-* ]] # need to be checked
-#          then
-#            echo "ERROR: There is a VM called $(basename $vm) which will conflict with this deployment - please remove it before trying another attempt"
-#            beforeTfError=1
-#          fi
-#        done
+        echo ""
+        echo "++++++++++++++++++++++++++++++++"
+        echo "Checking for VM conflict name..."
+        for vm in $(govc find / -type m)
+        do
+          if [[ $(basename $vm) == jump ]]
+          then
+            echo "ERROR: There is a VM called $(basename $vm) which will conflict with this deployment - please remove it before trying another attempt"
+            beforeTfError=1
+          fi
+          if [[ $(basename $vm) == $(basename $(cat nsxt.json | jq -r .nsxt.aviOva) .ova)-* ]] # need to be checked
+          then
+            echo "ERROR: There is a VM called $(basename $vm) which will conflict with this deployment - please remove it before trying another attempt"
+            beforeTfError=1
+          fi
+        done
         #
         govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi) > /dev/null 2>&1 || true
 #        echo "govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi) > /dev/null 2>&1 || true"
@@ -141,14 +141,16 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "  path = \"$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi)\"" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
-#        for cl in $(govc library.ls)
-#        do
-#          if [[ $(basename $cl) == $(cat nsxt.json | jq -r .nsxt.cl_avi_name) ]]
-#          then
-#            echo "ERROR: There is a Content Library called $(basename cl) which will conflict with this deployment - please remove it before trying another attempt"
-#            beforeTfError=1
-#          fi
-#        done
+        #
+        for cl in $(govc library.ls)
+        do
+          if [[ $(basename $cl) == $(cat nsxt.json | jq -r .nsxt.cl_avi_name) ]]
+          then
+            echo "ERROR: There is a Content Library called $(basename cl) which will conflict with this deployment - please remove it before trying another attempt"
+            beforeTfError=1
+          fi
+        done
+        #
         echo "resource \"vsphere_content_library\" \"libraryAvi$count\" {" | tee -a vsphere_infrastructure$count.tf
         echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  name            = $(cat nsxt.json | jq .nsxt.cl_avi_name)" | tee -a vsphere_infrastructure$count.tf
@@ -282,36 +284,28 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
       then
         #
         IFS=$'\n'
-#        echo ""
-#        echo "++++++++++++++++++++++++++++++++"
-#        echo "Checking for VM conflict name..."
-#        for vm in $(govc find / -type m)
-#        do
-#          if [[ $(basename $vm) == backend-* ]]
-#          then
-#            echo "ERROR: There is a VM called $(basename $vm) which will conflict with this deployment - please remove it before trying another attempt"
-#            beforeTfError=1
-#          fi
-#        done
+        echo ""
+        echo "++++++++++++++++++++++++++++++++"
+        echo "Checking for VM conflict name..."
+        for vm in $(govc find / -type m)
+        do
+          if [[ $(basename $vm) == backend-* ]]
+          then
+            echo "ERROR: There is a VM called $(basename $vm) which will conflict with this deployment - please remove it before trying another attempt"
+            beforeTfError=1
+          fi
+        done
         #
-#        for cl in $(govc library.ls)
-#        do
-#          if [[ $(basename $cl) == $(cat nsxt.json | jq -c -r .nsxt.cl_app_name) ]]
-#          then
-#            echo "ERROR: There is a Content Library called $(basename cl) which will conflict with this deployment - please remove it before trying another attempt"
-#            beforeTfError=1
-#          fi
-#        done
-        # govc folder.create /$(cat nsxt.json | jq -r .nsxt.vcenter.dc)/vm/$(echo $vcenter | jq .folder_application) > /dev/null 2>&1 || true
-        echo "govc folder.create /$(cat nsxt.json | jq -c -r .nsxt.vcenter.dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application) > /dev/null 2>&1 || true"
+        for cl in $(govc library.ls)
+        do
+          if [[ $(basename $cl) == $(cat nsxt.json | jq -c -r .nsxt.cl_app_name) ]]
+          then
+            echo "ERROR: There is a Content Library called $(basename cl) which will conflict with this deployment - please remove it before trying another attempt"
+            beforeTfError=1
+          fi
+        done
         #
-#        echo "resource \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure$count.tf
-#        echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
-#        echo "  path          = $(echo $vcenter | jq .folder_application)" | tee -a vsphere_infrastructure$count.tf
-#        echo "  type          = \"vm\"" | tee -a vsphere_infrastructure$count.tf
-#        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf
-#        echo "}" | tee -a vsphere_infrastructure$count.tf
-#        echo "" | tee -a vsphere_infrastructure$count.tf
+        govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application) > /dev/null 2>&1 || true
         #
         #
         echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure$count.tf
@@ -319,7 +313,6 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "  path = \"/$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
-        #
         #
         echo "resource \"vsphere_content_library\" \"App$count\" {" | tee -a vsphere_infrastructure$count.tf
         echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
