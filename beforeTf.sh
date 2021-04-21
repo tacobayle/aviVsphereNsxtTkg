@@ -129,12 +129,14 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #        echo "govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi) > /dev/null 2>&1 || true"
         #
         echo "data \"vsphere_network\" \"networkMgmt$count\" {" | tee -a vsphere_infrastructure$count.tf
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  name          = var.nsxt.network_management.name" | tee -a vsphere_infrastructure$count.tf
         echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
         #
         echo "data \"vsphere_folder\" \"folderController\" {" | tee -a vsphere_infrastructure$count.tf
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  path = \"$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -r .nsxt.folder_avi)\"" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
@@ -147,6 +149,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #          fi
 #        done
         echo "resource \"vsphere_content_library\" \"libraryAvi$count\" {" | tee -a vsphere_infrastructure$count.tf
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  name            = $(cat nsxt.json | jq .nsxt.cl_avi_name)" | tee -a vsphere_infrastructure$count.tf
         echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure$count.tf
@@ -312,6 +315,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         #
         echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure$count.tf
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  path = \"/$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
@@ -333,6 +337,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "" | tee -a vsphere_infrastructure$count.tf
         #
         echo "data \"vsphere_network\" \"networkBackend$count\" {" | tee -a vsphere_infrastructure$count.tf
+        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
         echo "  name          = var.nsxt.network_backend.name" | tee -a vsphere_infrastructure$count.tf
         echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
