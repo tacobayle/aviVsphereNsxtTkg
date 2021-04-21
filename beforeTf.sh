@@ -312,7 +312,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         #
         echo "data \"vsphere_folder\" \"folderApp\" {" | tee -a vsphere_infrastructure$count.tf
-        echo "path = \"/$(cat nsxt.json | jq -c -r .nsxt.vcenter.dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
+        echo "path = \"/$(echo $vcenter | jq .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
         echo "}" | tee -a vsphere_infrastructure$count.tf
         echo "" | tee -a vsphere_infrastructure$count.tf
         #
