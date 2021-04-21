@@ -12,8 +12,8 @@ write_files:
   - content: |
       #!/bin/bash
       # retrieve the last network interface
-      #sudo systemctl disable systemd-resolved
-      #sudo systemctl stop systemd-resolved
+      sudo systemctl disable systemd-resolved
+      sudo systemctl stop systemd-resolved
       iface=`ip -o link show | awk -F': ' '{print $2}' | tail -1`
       mac=`ip -o link show | awk -F'link/ether ' '{print $2}' | awk -F' ' '{print $1}'| tail -1`
       hostname=`hostname`
@@ -23,37 +23,29 @@ write_files:
       echo "    ethernets:" | sudo tee -a ${netplanFile}
       echo "        $iface:" | sudo tee -a ${netplanFile}
       echo "            dhcp4: false" | sudo tee -a ${netplanFile}
-      echo "            addresses: [${ip}/${mask}]" | sudo tee -a ${netplanFile}
       echo "            match:" | sudo tee -a ${netplanFile}
       echo "                macaddress: $mac" | sudo tee -a ${netplanFile}
       echo "            set-name: $iface" | sudo tee -a ${netplanFile}
-      echo "            gateway4: ${defaultGw}" | sudo tee -a ${netplanFile}
-      echo "            nameservers:" | sudo tee -a ${netplanFile}
-      echo "              addresses: [${dns}]" | sudo tee -a ${netplanFile}
       echo "    version: 2" | sudo tee -a ${netplanFile}
       sudo netplan apply
+      sudo ip link set $iface down
+      sudo ip link set $iface up
+      sudo ip address add ${ip}/${subnetMask} dev $iface
+      sudo ip route add default via ${defaultGw}
+      echo 'nameserver ${dnsMain}' | sudo tee /etc/resolv.conf
       ping -c 3 www.google.com
-      sudo apt-get update
-      sudo apt-get install -y apache2-utils
-      sudo apt install -y python3-pip
-      sudo apt install -y python-pip
-      sudo apt install -y python-jmespath
-      sudo apt install -y jq
-      sudo apt install -y sshpass
-      pip install ansible==${ansibleVersion}
-      pip install avisdk==${aviSdkVersion}
-      pip3 install avisdk==${aviSdkVersion}
-      pip install pyvmomi
-      pip install dnspython
-      pip3 install dnspython
-      pip3 install netaddr
-      pip install netaddr
-      sudo -u ${username} ansible-galaxy install -f avinetworks.avisdk
-      cd /usr/local/bin
-      sudo wget https://github.com/vmware/govmomi/releases/download/v0.24.0/govc_linux_amd64.gz
-      sudo gunzip govc_linux_amd64.gz
-      sudo mv govc_linux_amd64 govc
-      sudo chmod +x govc
+      sudo apt update
+      sudo apt install -y apache2
+      sudo apt install -y docker.io
+      sudo usermod -a -G docker ${username}
+      sudo mv /var/www/html/index.html /var/www/html/index.html.old
+      echo -e "Hello World - cloud is NSXT - Node is $(hostname)" | sudo tee /var/www/html/index.html
+      git clone ${url_demovip_server}
+      cd $(basename ${url_demovip_server})
+      sudo docker build . --tag demovip_server:latest
+      ifPrimary=`ip route | grep default | sed -e "s/^.*dev.//" -e "s/.proto.*//"`
+      ip=$(ip -f inet addr show $ifPrimary | awk '/inet / {print $2}' | awk -F/ '{print $1}')
+      sudo docker run -d -p $ip:8080:80 demovip_server:latest
       echo "cloud init done" | tee /tmp/cloudInitDone.log
     path: /opt/bootstrap.sh
     permissions: 0755

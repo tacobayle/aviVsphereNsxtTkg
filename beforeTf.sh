@@ -208,7 +208,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "}" | tee -a controller$count.tf
         #
         #
-        if [[ $(cat nsxt.json | jq -c -r .nsxt.controller.dhcp) == false ]]
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
         then
           cp userdata/jump.userdata.static userdata/jump.userdata
           echo "data \"template_file\" \"jump$count\" {" | tee -a jump$count.tf
@@ -226,7 +226,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           echo "}" | tee -a jump$count.tf
           echo "" | tee -a jump$count.tf
         fi
-        if [[ $(cat nsxt.json | jq -c -r .nsxt.controller.dhcp) == true ]]
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.contrnetwork_managementoller.dhcp) == true ]]
         then
           cp userdata/jump.userdata.dhcp userdata/jump.userdata
           echo "data \"template_file\" \"jumpbox_userdata\" {" | tee -a jump$count.tf
@@ -339,6 +339,39 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "" | tee -a vsphere_infrastructure$count.tf
         #
         #
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_backend.dhcp) == false ]]
+        then
+          cp userdata/backend.userdata.static userdata/backend.userdata
+          echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf
+          echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf
+          echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf
+          echo "  vars = {" | tee -a backend$count.tf
+          echo "    defaultGw          = split(\"/\", var.nsxt.network_backend.defaultGateway)[0]" | tee -a backend$count.tf
+          echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf
+          echo "    ip                 = cidrhost("var.nsxt.network_backend.defaultGateway", element(var.nsxt.network_backend.backend_ips, count.index + $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter)))))" | tee -a backend$count.tf
+          echo "    subnetMask         = split(\"/\", var.nsxt.network_backend.defaultGateway)[1]" | tee -a backend$count.tf
+          echo "    netplanFile        = var.backend.netplanFile" | tee -a backend$count.tf
+          echo "    dns                = var.nsxt.network_backend.dns" | tee -a backend$count.tf
+          echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf
+          echo "    username           = var.backend.username" | tee -a backend$count.tf
+          echo "  }" | tee -a backend$count.tf
+          echo "}" | tee -a backend$count.tf
+        fi
+        #
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_backend.dhcp) == true ]]
+        then
+          cp userdata/backend.userdata.dhcp userdata/backend.userdata
+          echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf
+          echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf
+          echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf
+          echo "  vars = {" | tee -a backend$count.tf
+          echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf
+          echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf
+          echo "    username           = var.backend.username" | tee -a backend$count.tf
+          echo "  }" | tee -a backend$count.tf
+          echo "}" | tee -a backend$count.tf
+        fi
+        #
         echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf
         echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf
         echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf
@@ -348,8 +381,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         echo "    ip                 = cidrhost("var.nsxt.network_backend.defaultGateway", count.index + $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter))))" | tee -a backend$count.tf
         echo "    subnetMask         = split(\"/\", var.nsxt.network_backend.defaultGateway)[1]" | tee -a backend$count.tf
         echo "    netplanFile        = var.backend.netplanFile" | tee -a backend$count.tf
-        echo "    dnsMain            = var.backend.dnsMain" | tee -a backend$count.tf
-        echo "    dnsSec             = var.backend.dnsSec" | tee -a backend$count.tf
+        echo "    dns                = var.nsxt.network_backend.dns" | tee -a backend$count.tf
         echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf
         echo "    username           = var.backend.username" | tee -a backend$count.tf
         echo "  }" | tee -a backend$count.tf
