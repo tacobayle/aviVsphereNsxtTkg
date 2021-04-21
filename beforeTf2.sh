@@ -35,12 +35,12 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #      exit 1
 #    fi
     jq -n \
-    --arg user $(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .username") \
-    --arg password $(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .password") \
-    --arg vsphere_server $(echo $vcenter | jq -r .vsphere_server) \
-    --arg alias $count \
-    '{user: $user, password: $password, vsphere_server: $vsphere_server, alias: $alias}' | tee config.json >/dev/null
-    python3 python/template.py template/provider_vcenter.j2 config.json provider_vcenter$count.tf
+    --arg dc $(echo $vcenter | jq -r .dc) \
+    --arg cluster $(echo $vcenter | jq -r .cluster) \
+    --arg datastore $(echo $vcenter | jq -r .datastore) \
+    --arg count $count \
+    '{dc: $dc, cluster: $cluster, datastore: $datastore, count: $count}' | tee config.json >/dev/null
+    python3 python/template.py template/vsphere_infratructure.j2 config.json vsphere_infratructure$count.tf
     rm config.json
     count=$((count+1))
   done
