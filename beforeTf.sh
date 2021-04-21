@@ -1,5 +1,5 @@
 #!/bin/bash
-# export vcenter_credentials='{ "vcenter_credentials": [ {"username": "admin", "password": "password1"}, {"username": "admin", "password": "password2"}, {"username": "admin", "password": "password3"} ] }'
+# export TF_VAR_vcenter_credentials='{ "vcenter_credentials": [ {"username": "admin", "password": "password1"}, {"username": "admin", "password": "password2"}, {"username": "admin", "password": "password3"} ] }'
 # rm -f backend* ; rm -f controller* ; rm -f jump* ; rm -f provider_vcenter* ; rm -f vsphere_infrastructure* ; rm -f nsxt_pool* ; /bin/bash beforeTf.sh
 current_dir=$PWD
 sudo apt install -y jq
@@ -14,14 +14,14 @@ fi
 cd $current_dir
 #
 # This will read environment variable such the following:
-#echo $vcenter_credentials | jq -r . | tee vCenterCreds.json
+#echo $TF_VAR_vcenter_credentials | jq -r . | tee vCenterCreds.json
 IFS=$'\n'
 count=0
 count_app=0
 for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
   do
     export GOVC_DATACENTER=$(echo $vcenter | jq -r .dc)
-    export GOVC_URL=$(echo $vcenter_credentials | jq -r ".vcenter_credentials[$count] .username"):$(echo $vcenter_credentials | jq -r ".vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
+    export GOVC_URL=$(echo $TF_VAR_vcenter_credentials | jq -r ".TF_VAR_vcenter_credentials[$count] .username"):$(echo $TF_VAR_vcenter_credentials | jq -r ".TF_VAR_vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
     export GOVC_INSECURE=true
     export GOVC_DATASTORE=$(echo $vcenter | jq -r .datastore)
 #    echo ""
@@ -300,7 +300,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #          fi
 #        done
         # govc folder.create /$(cat nsxt.json | jq -r .nsxt.vcenter.dc)/vm/$(echo $vcenter | jq .folder_application) > /dev/null 2>&1 || true
-        echo "govc folder.create /$(cat nsxt.json | jq -c -r .nsxt.vcenter.dc)/vm/$(echo $vcenter | jq .folder_application) > /dev/null 2>&1 || true"
+        echo "govc folder.create /$(cat nsxt.json | jq -c -r .nsxt.vcenter.dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application) > /dev/null 2>&1 || true"
         #
 #        echo "resource \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure$count.tf
 #        echo "  provider      = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf
@@ -309,6 +309,13 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure$count.tf
 #        echo "}" | tee -a vsphere_infrastructure$count.tf
 #        echo "" | tee -a vsphere_infrastructure$count.tf
+        #
+        #
+        echo "data \"vsphere_folder\" \"folderApp\" {" | tee -a vsphere_infrastructure$count.tf
+        echo "path = "/$(cat nsxt.json | jq -c -r .nsxt.vcenter.dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure$count.tf
+        echo "}" | tee -a vsphere_infrastructure$count.tf
+        echo "" | tee -a vsphere_infrastructure$count.tf
+        #
         #
         echo "resource \"vsphere_content_library\" \"App$count\" {" | tee -a vsphere_infrastructure$count.tf
         echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure$count.tf

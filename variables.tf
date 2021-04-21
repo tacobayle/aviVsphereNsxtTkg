@@ -11,7 +11,7 @@ variable "avi_password" {}
 
 variable "nsxt" {}
 
-//variable "vcenter_credentials" {}
+variable "vcenter_credentials" {}
 
 //variable "contentLibrary" {
 //  default = {
