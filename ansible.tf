@@ -56,3 +56,20 @@ resource "null_resource" "ansible" {
     ]
   }
 }
+
+data "template_file" "destroy" {
+  template = file("${path.module}/template/destroy.sh.tmpl")
+  vars = {
+    privateKey = var.jump.private_key_path
+    jump_ip = vsphere_virtual_machine.jump.default_ip_address
+    aviPbAbsentUrl = var.ansible.aviPbAbsentUrl
+    aviPbAbsentTag = var.ansible.aviPbAbsentTag
+    aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile
+  }
+}
+
+resource "null_resource" "destroy" {
+  provisioner "local-exec" {
+    command = "echo '${data.template_file.destroy.rendered}' | tee -a destroy.sh"
+  }
+}

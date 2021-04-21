@@ -91,7 +91,8 @@
       "tenant_access_to_provider_se": "true",
       "tenant_vrf": "false",
       "dhcp": false,
-      "floating_ip": false
+      "floating_ip": false,
+      "aviCredsJsonFile": "~/.creds.json"
     },
     "network_management": {
       "name": "N2-T1_Segment-Mgmt-10.15.3.0-24",
@@ -328,20 +329,6 @@
             }
           ],
           "se_group_ref": "seGroupCpuAutoScale"
-        },
-        {
-          "name": "app5-nsxtGroupBased",
-          "pool_ref": "NSXT-Group-0",
-          "services": [
-            {
-              "port": 80,
-              "enable_ssl": "false"
-            },
-            {
-              "port": 443,
-              "enable_ssl": "true"
-            }
-          ]
         }
       ],
       "dns": [
