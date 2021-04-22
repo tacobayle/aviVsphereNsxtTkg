@@ -5,7 +5,7 @@ data "vsphere_folder" "folderApp{{ count }}" {
 
 resource "vsphere_content_library" "App{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
-  name            = {{ cl_app_name }}
+  name            = "{{ cl_app_name }}"
   storage_backing = [data.vsphere_datastore.datastore{{ count }}.id]
 }
 
