@@ -7,7 +7,7 @@ data "template_file" "jump{{ count }}" {
     username = var.jump.username
     ip = cidrhost(var.nsxt.network_management.defaultGateway, var.nsxt.network_management.jump_ip)
     mask = split("/", var.nsxt.network_management.defaultGateway)[1]
-    defaultGw = split("/", var.nsxt.network_management.defaultGateway[0])
+    defaultGw = split("/", var.nsxt.network_management.defaultGateway)[0]
     netplanFile = var.jump.netplanFile
     dns = var.nsxt.network_management.dns
   }
