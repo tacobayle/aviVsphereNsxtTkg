@@ -221,7 +221,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           python3 python/template.py template/controller_static.j2 config.json controller_static$count.tf
           rm config.json
         fi
-        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == true ]]
         then
           jq -n \
           --arg count $count \
