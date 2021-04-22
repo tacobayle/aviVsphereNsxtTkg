@@ -21,7 +21,7 @@ data "vsphere_resource_pool" "pool{{ count }}" {
   datacenter_id = data.vsphere_datacenter.dc{{ count }}.id
 }
 
-resource "vsphere_content_library" "libraryAviSE{{ count }}" {"
+resource "vsphere_content_library" "libraryAviSE{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
   name            = "{{ cl_se_name }}"
   storage_backing = [data.vsphere_datastore.datastore{{ count }}.id]
