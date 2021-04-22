@@ -394,7 +394,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
          --arg ubuntuJump $(cat nsxt.json | jq -r .nsxt.ubuntuJump) \
          --arg count $count \
          '{dc: $dc, folder_app: $folder_app, cl_app_name: $cl_app_name, item_name_ubuntuApp: $item_name_ubuntuApp, count: $count}' | tee config.json >/dev/null
-         python3 python/template.py template/vsphere_infrastructure_avi.j2 config.json vsphere_infrastructure_app$count.tf
+         python3 python/template.py template/vsphere_infrastructure_app.j2 config.json vsphere_infrastructure_app$count.tf
          rm config.json
 #        echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
 #        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null

@@ -7,14 +7,14 @@ data "template_file" "jump{{ count }}" {
     username = var.jump.username
     ip = cidrhost(var.nsxt.network_management.defaultGateway, var.nsxt.network_management.jump_ip)
     mask = split("/", var.nsxt.network_management.defaultGateway)[1]
-    defaultGw = split("/", var.nsxt.network_management.defaultGateway)[0]
+    defaultGw = split("/", var.nsxt.network_management.defaultGateway[0]
     netplanFile = var.jump.netplanFile
     dns = var.nsxt.network_management.dns
   }
 }
 
 resource "vsphere_virtual_machine" "jump" {
-  provider          = vsphere.vcenter$(echo {{ count }})
+  provider          = vsphere.vcenter{{ count }}
   name              = "jump"
   datastore_id      = data.vsphere_datastore.datastore{{ count }}.id
   resource_pool_id  = data.vsphere_resource_pool.pool{{ count }}.id
@@ -40,8 +40,8 @@ resource "vsphere_virtual_machine" "jump" {
   vapp {
     properties = {
       hostname    = "jump"
-      public-keys = file(var.jump.public_key_path)
-      user-data   = base64encode(data.template_file.jump{{ count }}.rendered)
+      public-keys = file(var.jump.public_key_path
+      user-data   = base64encode(data.template_file.jump{{ count }}.rendered
     }
   }
 }
