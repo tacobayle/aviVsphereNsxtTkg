@@ -213,42 +213,58 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
          rm config.json
         #
         #
-        echo "resource \"vsphere_virtual_machine\" \"controller\" {" | tee controller$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a controller$count.tf >/dev/null
-        echo "  count            = (var.nsxt.controller.cluster == true ? 3 : 1)" | tee -a controller$count.tf >/dev/null
-        echo "  name             = \"\${split(\".ova\", basename(var.nsxt.aviOva))[0]}-\${count.index}\"" | tee -a controller$count.tf >/dev/null
-        echo "  datastore_id      = data.vsphere_datastore.datastore$count.id" | tee -a controller$count.tf >/dev/null
-        echo "  resource_pool_id  = data.vsphere_resource_pool.pool$count.id" | tee -a controller$count.tf >/dev/null
-        echo "  folder           = data.vsphere_folder.folderController.path" | tee -a controller$count.tf >/dev/null
-        echo "" | tee -a controller$count.tf >/dev/null
-        echo "  network_interface {" | tee -a controller$count.tf >/dev/null
-        echo "    network_id = data.vsphere_network.networkMgmt$count.id" | tee -a controller$count.tf >/dev/null
-        echo "  }" | tee -a controller$count.tf >/dev/null
-        echo "" | tee -a controller$count.tf >/dev/null
-        echo "  num_cpus = var.nsxt.controller.cpu" | tee -a controller$count.tf >/dev/null
-        echo "  memory = var.nsxt.controller.memory" | tee -a controller$count.tf >/dev/null
-        echo "  wait_for_guest_net_timeout = var.nsxt.controller.wait_for_guest_net_timeout" | tee -a controller$count.tf >/dev/null
-        echo "  guest_id = \"guestid-\${split(\".ova\", basename(var.nsxt.aviOva))[0]}-\${count.index}\"" | tee -a controller$count.tf >/dev/null
-        echo "" | tee -a controller$count.tf >/dev/null
-        echo "  disk {" | tee -a controller$count.tf >/dev/null
-        echo "    size             = var.nsxt.controller.disk" | tee -a controller$count.tf >/dev/null
-        echo "    label            = \"controller-\${split(\".ova\", basename(var.nsxt.aviOva))[0]}-\${count.index}.lab_vmdk\"" | tee -a controller$count.tf >/dev/null
-        echo "    thin_provisioned = true" | tee -a controller$count.tf >/dev/null
-        echo "  }" | tee -a controller$count.tf >/dev/null
-        echo "  clone {" | tee -a controller$count.tf >/dev/null
-        echo "    template_uuid = vsphere_content_library_item.avi$count.id" | tee -a controller$count.tf >/dev/null
-        echo "  }" | tee -a controller$count.tf >/dev/null
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
         then
-          echo "  vapp {" | tee -a controller$count.tf >/dev/null
-          echo "    properties = {" | tee -a controller$count.tf >/dev/null
-          echo "      \"mgmt-ip\"     = cidrhost(var.nsxt.network_management.defaultGateway, element(var.nsxt.network_management.avi_ctrl_mgmt_ips, count.index))" | tee -a controller$count.tf >/dev/null
-          echo "      \"mgmt-mask\"   = cidrnetmask(var.nsxt.network_management.defaultGateway)" | tee -a controller$count.tf >/dev/null
-          echo "      \"default-gw\"  = split(\"/\", var.nsxt.network_management.defaultGateway)[0]" | tee -a controller$count.tf >/dev/null
-          echo "    }" | tee -a controller$count.tf >/dev/null
-          echo "  }" | tee -a controller$count.tf >/dev/null
+          jq -n \
+          --arg count $count \
+          '{count: $count}' | tee config.json >/dev/null
+          python3 python/template.py template/controller_static.j2 config.json controller_static$count.tf
+          rm config.json
         fi
-        echo "}" | tee -a controller$count.tf >/dev/null
+        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
+        then
+          jq -n \
+          --arg count $count \
+          '{count: $count}' | tee config.json >/dev/null
+          python3 python/template.py template/controller_dhcp.j2 config.json controller_dhcp$count.tf
+          rm config.json
+        fi
+#        echo "resource \"vsphere_virtual_machine\" \"controller\" {" | tee controller$count.tf >/dev/null
+#        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a controller$count.tf >/dev/null
+#        echo "  count            = (var.nsxt.controller.cluster == true ? 3 : 1)" | tee -a controller$count.tf >/dev/null
+#        echo "  name             = \"\${split(\".ova\", basename(var.nsxt.aviOva))[0]}-\${count.index}\"" | tee -a controller$count.tf >/dev/null
+#        echo "  datastore_id      = data.vsphere_datastore.datastore$count.id" | tee -a controller$count.tf >/dev/null
+#        echo "  resource_pool_id  = data.vsphere_resource_pool.pool$count.id" | tee -a controller$count.tf >/dev/null
+#        echo "  folder           = data.vsphere_folder.folderController.path" | tee -a controller$count.tf >/dev/null
+#        echo "" | tee -a controller$count.tf >/dev/null
+#        echo "  network_interface {" | tee -a controller$count.tf >/dev/null
+#        echo "    network_id = data.vsphere_network.networkMgmt$count.id" | tee -a controller$count.tf >/dev/null
+#        echo "  }" | tee -a controller$count.tf >/dev/null
+#        echo "" | tee -a controller$count.tf >/dev/null
+#        echo "  num_cpus = var.nsxt.controller.cpu" | tee -a controller$count.tf >/dev/null
+#        echo "  memory = var.nsxt.controller.memory" | tee -a controller$count.tf >/dev/null
+#        echo "  wait_for_guest_net_timeout = var.nsxt.controller.wait_for_guest_net_timeout" | tee -a controller$count.tf >/dev/null
+#        echo "  guest_id = \"guestid-\${split(\".ova\", basename(var.nsxt.aviOva))[0]}-\${count.index}\"" | tee -a controller$count.tf >/dev/null
+#        echo "" | tee -a controller$count.tf >/dev/null
+#        echo "  disk {" | tee -a controller$count.tf >/dev/null
+#        echo "    size             = var.nsxt.controller.disk" | tee -a controller$count.tf >/dev/null
+#        echo "    label            = \"controller-\${split(\".ova\", basename(var.nsxt.aviOva))[0]}-\${count.index}.lab_vmdk\"" | tee -a controller$count.tf >/dev/null
+#        echo "    thin_provisioned = true" | tee -a controller$count.tf >/dev/null
+#        echo "  }" | tee -a controller$count.tf >/dev/null
+#        echo "  clone {" | tee -a controller$count.tf >/dev/null
+#        echo "    template_uuid = vsphere_content_library_item.avi$count.id" | tee -a controller$count.tf >/dev/null
+#        echo "  }" | tee -a controller$count.tf >/dev/null
+#        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
+#        then
+#          echo "  vapp {" | tee -a controller$count.tf >/dev/null
+#          echo "    properties = {" | tee -a controller$count.tf >/dev/null
+#          echo "      \"mgmt-ip\"     = cidrhost(var.nsxt.network_management.defaultGateway, element(var.nsxt.network_management.avi_ctrl_mgmt_ips, count.index))" | tee -a controller$count.tf >/dev/null
+#          echo "      \"mgmt-mask\"   = cidrnetmask(var.nsxt.network_management.defaultGateway)" | tee -a controller$count.tf >/dev/null
+#          echo "      \"default-gw\"  = split(\"/\", var.nsxt.network_management.defaultGateway)[0]" | tee -a controller$count.tf >/dev/null
+#          echo "    }" | tee -a controller$count.tf >/dev/null
+#          echo "  }" | tee -a controller$count.tf >/dev/null
+#        fi
+#        echo "}" | tee -a controller$count.tf >/dev/null
         #
         #
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
