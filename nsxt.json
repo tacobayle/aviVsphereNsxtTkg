@@ -83,7 +83,7 @@
       "cluster": false,
       "wait_for_guest_net_timeout": 2,
       "environment": "VMWARE",
-      "dns":  ["8.8.8.8", "8.8.4.4"],
+      "dns":  ["172.18.0.15"],
       "ntp": ["95.81.173.155", "188.165.236.162"],
       "floatingIp": "1.1.1.1",
       "from_email": "avicontroller@vmc.local",

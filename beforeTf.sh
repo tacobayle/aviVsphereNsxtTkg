@@ -220,6 +220,15 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           '{count: $count}' | tee config.json >/dev/null
           python3 python/template.py template/controller_static.j2 config.json controller_static$count.tf
           rm config.json
+          #
+          cp userdata/jump.userdata.static userdata/jump.userdata
+          jq -n \
+          --arg count $count \
+          '{count: $count}' | tee config.json >/dev/null
+          python3 python/template.py template/jump_static.j2 config.json jump_static$count.tf
+          rm config.json
+          #
+
         fi
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == true ]]
         then
@@ -228,6 +237,14 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
           '{count: $count}' | tee config.json >/dev/null
           python3 python/template.py template/controller_dhcp.j2 config.json controller_dhcp$count.tf
           rm config.json
+          #
+          cp userdata/jump.userdata.dhcp userdata/jump.userdata
+          jq -n \
+          --arg count $count \
+          '{count: $count}' | tee config.json >/dev/null
+          python3 python/template.py template/jump_dhcp.j2 config.json jump_dhcp$count.tf
+          rm config.json
+          #
         fi
 #        echo "resource \"vsphere_virtual_machine\" \"controller\" {" | tee controller$count.tf >/dev/null
 #        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a controller$count.tf >/dev/null
@@ -267,71 +284,71 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #        echo "}" | tee -a controller$count.tf >/dev/null
         #
         #
-        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
-        then
-          cp userdata/jump.userdata.static userdata/jump.userdata
-          echo "data \"template_file\" \"jump$count\" {" | tee -a jump$count.tf >/dev/null
-          echo "  template = file(\"userdata/jump.userdata\")" | tee -a jump$count.tf >/dev/null
-          echo "  vars = {" | tee -a jump$count.tf >/dev/null
-          echo "    pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
-          echo "    aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
-          echo "    ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
-          echo "    username = var.jump.username" | tee -a jump$count.tf >/dev/null
-          echo "    ip = cidrhost(var.nsxt.network_management.defaultGateway, var.nsxt.network_management.jump_ip)" | tee -a jump$count.tf >/dev/null
-          echo "    mask = split(\"/\", var.nsxt.network_management.defaultGateway)[1]" | tee -a jump$count.tf >/dev/null
-          echo "    defaultGw = split(\"/\", var.nsxt.network_management.defaultGateway)[0]" | tee -a jump$count.tf >/dev/null
-          echo "    netplanFile = var.jump.netplanFile" | tee -a jump$count.tf >/dev/null
-          echo "    dns = var.nsxt.network_management.dns" | tee -a jump$count.tf >/dev/null
-          echo "  }" | tee -a jump$count.tf >/dev/null
-          echo "}" | tee -a jump$count.tf >/dev/null
-          echo "" | tee -a jump$count.tf >/dev/null
-        fi
-        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == true ]]
-        then
-          cp userdata/jump.userdata.dhcp userdata/jump.userdata
-          echo "data \"template_file\" \"jumpbox_userdata\" {" | tee -a jump$count.tf >/dev/null
-          echo "  template = file(\"userdata/jump.userdata\")" | tee -a jump$count.tf >/dev/null
-          echo "  vars = {" | tee -a jump$count.tf >/dev/null
-          echo "    pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
-          echo "    aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
-          echo "    ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
-          echo "    username = var.jump.username" | tee -a jump$count.tf >/dev/null
-          echo "  }" | tee -a jump$count.tf >/dev/null
-          echo "}" | tee -a jump$count.tf >/dev/null
-          echo "" | tee -a jump$count.tf >/dev/null
-        fi
-        echo "resource \"vsphere_virtual_machine\" \"jump\" {" | tee -a jump$count.tf >/dev/null
-        echo "  provider          = vsphere.vcenter$(echo $count)" | tee -a jump$count.tf >/dev/null
-        echo "  name              = \"jump\"" | tee -a jump$count.tf >/dev/null
-        echo "  datastore_id      = data.vsphere_datastore.datastore$count.id" | tee -a jump$count.tf >/dev/null
-        echo "  resource_pool_id  = data.vsphere_resource_pool.pool$count.id" | tee -a jump$count.tf >/dev/null
-        echo "  folder            = data.vsphere_folder.folderController.path" | tee -a jump$count.tf >/dev/null
-        echo "  network_interface {" | tee -a jump$count.tf >/dev/null
-        echo "    network_id = data.vsphere_network.networkMgmt$count.id" | tee -a jump$count.tf >/dev/null
-        echo "  }" | tee -a jump$count.tf >/dev/null
-        echo "  num_cpus = var.jump.cpu" | tee -a jump$count.tf >/dev/null
-        echo "  memory = var.jump.memory" | tee -a jump$count.tf >/dev/null
-        echo "  wait_for_guest_net_routable = var.jump.wait_for_guest_net_routable" | tee -a jump$count.tf >/dev/null
-        echo "  guest_id = \"guestid-jump\"" | tee -a jump$count.tf >/dev/null
-        echo "  disk {" | tee -a jump$count.tf >/dev/null
-        echo "    size             = var.jump.disk" | tee -a jump$count.tf >/dev/null
-        echo "    label            = \"jump.lab_vmdk\"" | tee -a jump$count.tf >/dev/null
-        echo "    thin_provisioned = true" | tee -a jump$count.tf >/dev/null
-        echo "  }" | tee -a jump$count.tf >/dev/null
-        echo "  cdrom {" | tee -a jump$count.tf >/dev/null
-        echo "    client_device = true" | tee -a jump$count.tf >/dev/null
-        echo "  }" | tee -a jump$count.tf >/dev/null
-        echo "  clone {" | tee -a jump$count.tf >/dev/null
-        echo "    template_uuid = vsphere_content_library_item.ubuntuJump$count.id" | tee -a jump$count.tf >/dev/null
-        echo "  }" | tee -a jump$count.tf >/dev/null
-        echo "  vapp {" | tee -a jump$count.tf >/dev/null
-        echo "    properties = {" | tee -a jump$count.tf >/dev/null
-        echo "      hostname    = \"jump\"" | tee -a jump$count.tf >/dev/null
-        echo "      public-keys = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
-        echo "      user-data   = base64encode(data.template_file.jump$count.rendered)" | tee -a jump$count.tf >/dev/null
-        echo "    }" | tee -a jump$count.tf >/dev/null
-        echo "  }" | tee -a jump$count.tf >/dev/null
-        echo "}" | tee -a jump$count.tf >/dev/null
+#        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
+#        then
+#          cp userdata/jump.userdata.static userdata/jump.userdata
+#          echo "data \"template_file\" \"jump$count\" {" | tee -a jump$count.tf >/dev/null
+#          echo "  template = file(\"userdata/jump.userdata\")" | tee -a jump$count.tf >/dev/null
+#          echo "  vars = {" | tee -a jump$count.tf >/dev/null
+#          echo "    pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
+#          echo "    aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
+#          echo "    ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
+#          echo "    username = var.jump.username" | tee -a jump$count.tf >/dev/null
+#          echo "    ip = cidrhost(var.nsxt.network_management.defaultGateway, var.nsxt.network_management.jump_ip)" | tee -a jump$count.tf >/dev/null
+#          echo "    mask = split(\"/\", var.nsxt.network_management.defaultGateway)[1]" | tee -a jump$count.tf >/dev/null
+#          echo "    defaultGw = split(\"/\", var.nsxt.network_management.defaultGateway)[0]" | tee -a jump$count.tf >/dev/null
+#          echo "    netplanFile = var.jump.netplanFile" | tee -a jump$count.tf >/dev/null
+#          echo "    dns = var.nsxt.network_management.dns" | tee -a jump$count.tf >/dev/null
+#          echo "  }" | tee -a jump$count.tf >/dev/null
+#          echo "}" | tee -a jump$count.tf >/dev/null
+#          echo "" | tee -a jump$count.tf >/dev/null
+#        fi
+#        if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == true ]]
+#        then
+##          cp userdata/jump.userdata.dhcp userdata/jump.userdata
+#          echo "data \"template_file\" \"jumpbox_userdata\" {" | tee -a jump$count.tf >/dev/null
+#          echo "  template = file(\"userdata/jump.userdata\")" | tee -a jump$count.tf >/dev/null
+#          echo "  vars = {" | tee -a jump$count.tf >/dev/null
+#          echo "    pubkey        = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
+#          echo "    aviSdkVersion = var.jump.aviSdkVersion" | tee -a jump$count.tf >/dev/null
+#          echo "    ansibleVersion = var.ansible.version" | tee -a jump$count.tf >/dev/null
+#          echo "    username = var.jump.username" | tee -a jump$count.tf >/dev/null
+#          echo "  }" | tee -a jump$count.tf >/dev/null
+#          echo "}" | tee -a jump$count.tf >/dev/null
+#          echo "" | tee -a jump$count.tf >/dev/null
+#        fi
+#        echo "resource \"vsphere_virtual_machine\" \"jump\" {" | tee -a jump$count.tf >/dev/null
+#        echo "  provider          = vsphere.vcenter$(echo $count)" | tee -a jump$count.tf >/dev/null
+#        echo "  name              = \"jump\"" | tee -a jump$count.tf >/dev/null
+#        echo "  datastore_id      = data.vsphere_datastore.datastore$count.id" | tee -a jump$count.tf >/dev/null
+#        echo "  resource_pool_id  = data.vsphere_resource_pool.pool$count.id" | tee -a jump$count.tf >/dev/null
+#        echo "  folder            = data.vsphere_folder.folderController.path" | tee -a jump$count.tf >/dev/null
+#        echo "  network_interface {" | tee -a jump$count.tf >/dev/null
+#        echo "    network_id = data.vsphere_network.networkMgmt$count.id" | tee -a jump$count.tf >/dev/null
+#        echo "  }" | tee -a jump$count.tf >/dev/null
+#        echo "  num_cpus = var.jump.cpu" | tee -a jump$count.tf >/dev/null
+#        echo "  memory = var.jump.memory" | tee -a jump$count.tf >/dev/null
+#        echo "  wait_for_guest_net_routable = var.jump.wait_for_guest_net_routable" | tee -a jump$count.tf >/dev/null
+#        echo "  guest_id = \"guestid-jump\"" | tee -a jump$count.tf >/dev/null
+#        echo "  disk {" | tee -a jump$count.tf >/dev/null
+#        echo "    size             = var.jump.disk" | tee -a jump$count.tf >/dev/null
+#        echo "    label            = \"jump.lab_vmdk\"" | tee -a jump$count.tf >/dev/null
+#        echo "    thin_provisioned = true" | tee -a jump$count.tf >/dev/null
+#        echo "  }" | tee -a jump$count.tf >/dev/null
+#        echo "  cdrom {" | tee -a jump$count.tf >/dev/null
+#        echo "    client_device = true" | tee -a jump$count.tf >/dev/null
+#        echo "  }" | tee -a jump$count.tf >/dev/null
+#        echo "  clone {" | tee -a jump$count.tf >/dev/null
+#        echo "    template_uuid = vsphere_content_library_item.ubuntuJump$count.id" | tee -a jump$count.tf >/dev/null
+#        echo "  }" | tee -a jump$count.tf >/dev/null
+#        echo "  vapp {" | tee -a jump$count.tf >/dev/null
+#        echo "    properties = {" | tee -a jump$count.tf >/dev/null
+#        echo "      hostname    = \"jump\"" | tee -a jump$count.tf >/dev/null
+#        echo "      public-keys = file(var.jump.public_key_path)" | tee -a jump$count.tf >/dev/null
+#        echo "      user-data   = base64encode(data.template_file.jump$count.rendered)" | tee -a jump$count.tf >/dev/null
+#        echo "    }" | tee -a jump$count.tf >/dev/null
+#        echo "  }" | tee -a jump$count.tf >/dev/null
+#        echo "}" | tee -a jump$count.tf >/dev/null
     fi
     #
     #
@@ -367,34 +384,46 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         govc folder.create /$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application) > /dev/null 2>&1 || true
         #
         #
-        echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  path = \"/$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        #
-        echo "resource \"vsphere_content_library\" \"App$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  name            = $(cat nsxt.json | jq -c .nsxt.cl_app_name)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        #
-        echo "resource \"vsphere_content_library_item\" \"ubuntu$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  name            = \"ubuntu\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  library_id      = vsphere_content_library.App$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  file_url        = $(cat nsxt.json | jq .nsxt.ubuntuApp)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        #
-        echo "data \"vsphere_network\" \"networkBackend$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  name          = var.nsxt.network_backend.name" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
-        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+        jq -n \
+        --arg dc $(echo $vcenter | jq -r .dc) \
+        --arg folder_app $(cat nsxt.json | jq -r .nsxt.folder_application) \
+         --arg cl_app_name $(cat nsxt.json | jq -r .nsxt.cl_app_name) \
+         --arg item_name_ubuntuApp $(basename $(cat nsxt.json | jq -r .nsxt.ubuntuApp)) \
+         --arg aviOva $(cat nsxt.json | jq -r .nsxt.aviOva) \
+         --arg item_name_jump $(basename $(cat nsxt.json | jq -r .nsxt.ubuntuJump)) \
+         --arg ubuntuJump $(cat nsxt.json | jq -r .nsxt.ubuntuJump) \
+         --arg count $count \
+         '{dc: $dc, folder_app: $folder_app, cl_app_name: $cl_app_name, item_name_ubuntuApp: $item_name_ubuntuApp, count: $count}' | tee config.json >/dev/null
+         python3 python/template.py template/vsphere_infrastructure_avi.j2 config.json vsphere_infrastructure_app$count.tf
+         rm config.json
+#        echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  path = \"/$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        #
+#        echo "resource \"vsphere_content_library\" \"App$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  name            = $(cat nsxt.json | jq -c .nsxt.cl_app_name)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  storage_backing = [data.vsphere_datastore.datastore$count.id]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        #
+#        echo "resource \"vsphere_content_library_item\" \"ubuntu$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  provider        = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  name            = \"ubuntu\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  library_id      = vsphere_content_library.App$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  file_url        = $(cat nsxt.json | jq .nsxt.ubuntuApp)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        #
+#        echo "data \"vsphere_network\" \"networkBackend$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  depends_on = [time_sleep.wait_segment_nsxt]" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  name          = var.nsxt.network_backend.name" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "  datacenter_id = data.vsphere_datacenter.dc$count.id" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "}" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
+#        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
         #
         #
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_backend.dhcp) == false ]]

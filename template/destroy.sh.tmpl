@@ -40,7 +40,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     #
     count=$((count+1))
   done
-ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} \'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}\'
+ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}'
 sleep 10
 echo "TF Refresh"
 terraform refresh -var-file=nsxt.json

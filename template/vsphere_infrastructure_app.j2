@@ -1,0 +1,24 @@
+data "vsphere_folder" "folderApp{{ count }}" {
+  provider = vsphere.vcenter{{ count }}
+  path = "{{ dc }}/vm/{{ folder_app }}"
+}
+
+resource "vsphere_content_library" "App{{ count }}" {
+  provider        = vsphere.vcenter{{ count }}
+  name            = $(cat nsxt.json | jq -c .nsxt.cl_app_name)
+  storage_backing = [data.vsphere_datastore.datastore{{ count }}.id]
+}
+
+resource "vsphere_content_library_item" "ubuntu{{ count }}" {
+  provider        = vsphere.vcenter{{ count }}
+  name            = "ubuntu"
+  library_id      = vsphere_content_library.App{{ count }}.id
+  file_url        = "{{ item_name_ubuntuApp }}"
+}
+
+data "vsphere_network" "networkBackend{{ count }}" {
+  provider = vsphere.vcenter{{ count }}
+  depends_on = [time_sleep.wait_segment_nsxt]
+  name          = var.nsxt.network_backend.name
+  datacenter_id = data.vsphere_datacenter.dc{{ count }}.id
+}
