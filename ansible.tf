@@ -70,6 +70,6 @@ data "template_file" "destroy" {
 
 resource "null_resource" "destroy" {
   provisioner "local-exec" {
-    command = "echo '${data.template_file.destroy.rendered}' | tee -a destroy.sh"
+    command = "echo \"${data.template_file.destroy.rendered}\" | tee -a destroy.sh"
   }
 }
