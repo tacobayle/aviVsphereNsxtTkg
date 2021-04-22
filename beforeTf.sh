@@ -201,12 +201,12 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
          jq -n \
          --arg dc $(echo $vcenter | jq -r .dc) \
-         --arg folder_avi $(cat nsxt.json | jq -r .nsxt.folder_avi)
-         --arg cl_avi_name $(cat nsxt.json | jq -r .nsxt.cl_avi_name)
-         --arg item_name_avi $(basename $(cat nsxt.json | jq -r .nsxt.aviOva))
-         --arg aviOva $(cat nsxt.json | jq -r .nsxt.aviOva)
-         --arg item_name_jump $(basename $(cat nsxt.json | jq -r .nsxt.ubuntuJump))
-         --arg ubuntuJump $(cat nsxt.json | jq -r .nsxt.ubuntuJump)
+         --arg folder_avi $(cat nsxt.json | jq -r .nsxt.folder_avi) \
+         --arg cl_avi_name $(cat nsxt.json | jq -r .nsxt.cl_avi_name) \
+         --arg item_name_avi $(basename $(cat nsxt.json | jq -r .nsxt.aviOva)) \
+         --arg aviOva $(cat nsxt.json | jq -r .nsxt.aviOva) \
+         --arg item_name_jump $(basename $(cat nsxt.json | jq -r .nsxt.ubuntuJump)) \
+         --arg ubuntuJump $(cat nsxt.json | jq -r .nsxt.ubuntuJump) \
          --arg count $count \
          '{dc: $dc, folder_avi: $folder_avi, cl_avi_name: $cl_avi_name, item_name_avi: $item_name_avi, aviOva: $aviOva, item_name_jump: $item_name_jump, ubuntuJump: $ubuntuJump, count: $count}' | tee config.json >/dev/null
          python3 python/template.py template/vsphere_infrastructure_avi.j2 config.json vsphere_infrastructure_avi$count.tf
