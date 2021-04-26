@@ -11,11 +11,11 @@ then
 fi
 cd $current_dir
 count=0
-IFS=$'\\\n'
+IFS=$'\n'
 for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
   do
     export GOVC_DATACENTER=$(echo $vcenter | jq -r .dc)
-    export GOVC_URL=$(echo $vcenter_credentials | jq -r ".vcenter_credentials[$count] .username"):$(echo $vcenter_credentials | jq -r ".vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
+    export GOVC_URL=$(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .username"):$(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
     export GOVC_INSECURE=true
     export GOVC_DATASTORE=$(echo $vcenter | jq -r .datastore)
     echo ""
@@ -28,7 +28,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
       echo "ERROR: vCenter connectivity issue - please check that you have Internet connectivity and please check that vCenter API endpoint is reachable from this EasyAvi appliance"
       exit 1
     fi
-    IFS=$'\\\n'
+    IFS=$'\n'
     for vm in $(govc find / -type m)
     do
       if [[ $(basename $vm) == EasyAvi-se* ]]

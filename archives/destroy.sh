@@ -15,7 +15,7 @@ IFS=$'\n'
 for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
   do
     export GOVC_DATACENTER=$(echo $vcenter | jq -r .dc)
-    export GOVC_URL=$(echo $vcenter_credentials | jq -r ".vcenter_credentials[$count] .username"):$(echo $vcenter_credentials | jq -r ".vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
+    export GOVC_URL=$(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .username"):$(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
     export GOVC_INSECURE=true
     export GOVC_DATASTORE=$(echo $vcenter | jq -r .datastore)
     echo ""
