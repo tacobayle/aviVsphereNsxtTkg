@@ -11,7 +11,7 @@ then
 fi
 cd $current_dir
 count=0
-IFS=$'\n'
+IFS=$'\\\n'
 for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
   do
     export GOVC_DATACENTER=$(echo $vcenter | jq -r .dc)
@@ -28,7 +28,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
       echo "ERROR: vCenter connectivity issue - please check that you have Internet connectivity and please check that vCenter API endpoint is reachable from this EasyAvi appliance"
       exit 1
     fi
-    IFS=$'\n'
+    IFS=$'\\\n'
     for vm in $(govc find / -type m)
     do
       if [[ $(basename $vm) == EasyAvi-se* ]]
