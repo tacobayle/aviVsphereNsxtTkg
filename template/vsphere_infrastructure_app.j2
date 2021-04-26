@@ -1,19 +1,19 @@
 data "vsphere_folder" "folderApp{{ count }}" {
   provider = vsphere.vcenter{{ count }}
-  path = "{{ dc }}/vm/{{ folder_app }}"
+  path = "{{ dc }}/vm/${var.nsxt.folder_application}"
 }
 
 resource "vsphere_content_library" "App{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
-  name            = "{{ cl_app_name }}"
+  name            = var.nsxt.cl_app_name
   storage_backing = [data.vsphere_datastore.datastore{{ count }}.id]
 }
 
 resource "vsphere_content_library_item" "ubuntu{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
-  name            = "ubuntu"
+  name            = basename(var.nsxt.ubuntuApp)
   library_id      = vsphere_content_library.App{{ count }}.id
-  file_url        = "{{ item_name_ubuntuApp }}"
+  file_url        = var.nsxt.ubuntuApp
 }
 
 data "vsphere_network" "networkBackend{{ count }}" {

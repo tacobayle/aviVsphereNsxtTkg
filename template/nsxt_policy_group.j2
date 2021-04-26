@@ -1,0 +1,19 @@
+resource "nsxt_policy_group" "backend{{ count }}" {
+  display_name = "EasyAvi-Backend-vCenter{{ count }}"
+  criteria {
+    condition {
+      key = "Tag"
+      member_type = "VirtualMachine"
+      operator = "EQUALS"
+      value = "EasyAvi - Backend - vCenter{{ count }}"
+    }
+  }
+}
+
+resource "nsxt_vm_tags" "backend{{ count }}" {
+  count = var.nsxt.backend_per_vcenter - 1
+  instance_id = vsphere_virtual_machine.backend{{ count }}[count.index].id
+  tag {
+    tag   = "EasyAvi - Backend - vCenter{{ count }}"
+  }
+}

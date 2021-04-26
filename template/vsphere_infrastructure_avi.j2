@@ -7,25 +7,25 @@ data "vsphere_network" "networkMgmt{{ count }}" {
 
 data "vsphere_folder" "folderController" {
   provider = vsphere.vcenter{{ count }}
-  path = "{{ dc }}/vm/{{ folder_avi }}"
+  path = "{{ dc }}/vm/${var.nsxt.folder_avi}"
 }
 
 resource "vsphere_content_library" "libraryAvi{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
-  name            = "{{ cl_avi_name }}"
+  name            = "var.nsxt.cl_avi_name"
   storage_backing = [data.vsphere_datastore.datastore{{ count }}.id]
 }
 
 resource "vsphere_content_library_item" "avi{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
-  name            = "{{ item_name_avi }}"
+  name            = basename(var.nsxt.aviOva)
   library_id      = vsphere_content_library.libraryAvi{{ count }}.id
-  file_url        = "{{ aviOva }}"
+  file_url        = var.nsxt.aviOva
 }
 
 resource "vsphere_content_library_item" "ubuntuJump{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
-  name            = "{{ item_name_jump }}"
+  name            = var.nsxt.ubuntuJump
   library_id      = vsphere_content_library.libraryAvi{{ count }}.id
-  file_url        = "{{ ubuntuJump }}"
+  file_url        = var.nsxt.ubuntuJump
 }

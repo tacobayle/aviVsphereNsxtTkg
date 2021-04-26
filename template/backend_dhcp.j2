@@ -1,0 +1,64 @@
+data "template_file" "backend{{ count }}" {
+  count = var.nsxt.backend_per_vcenter
+  template = file("userdata/backend.userdata")
+  vars = {
+    pubkey             = file(var.jump.public_key_path)
+    url_demovip_server = var.backend.url_demovip_server
+    username           = var.backend.username
+  }
+}
+          
+resource "vsphere_virtual_machine" "backend{{ count }}" {
+  provider          = vsphere.vcenter{{ count }}
+  count             = var.nsxt.backend_per_vcenter
+  name              = "backend-${count.index}"
+  datastore_id      = data.vsphere_datastore.datastore{{ count }}.id
+  resource_pool_id  = data.vsphere_resource_pool.pool{{ count }}.id
+  folder            = data.vsphere_folder.folderApp{{ count }}.path
+
+  network_interface {
+    network_id = data.vsphere_network.networkBackend{{ count }}.id
+  }
+
+  num_cpus = var.backend.cpu
+  memory = var.backend.memory
+  wait_for_guest_net_routable = var.backend.wait_for_guest_net_routable
+  guest_id = "guestid-backend-${count.index}"
+
+  disk {
+    size             = var.backend.disk
+    label            = "backend-${count.index}.lab_vmdk"
+    thin_provisioned = true
+  }
+
+  cdrom {
+    client_device = true
+  }
+
+  clone {
+    template_uuid = vsphere_content_library_item.ubuntu{{ count }}.id
+  }
+
+  vapp {
+    properties = {
+      hostname    = "backend-${count.index}"
+      public-keys = file(var.jump.public_key_path)
+      user-data   = base64encode(data.template_file.backend{{ count }}[count.index].rendered)
+    }
+  }
+
+  connection {
+    host        = self.default_ip_address
+    type        = "ssh"
+    agent       = false
+    user        = var.backend.username
+    private_key = file(var.jump.private_key_path)
+    }
+
+  provisioner "remote-exec" {
+    inline      = [
+      "while [ ! -f /tmp/cloudInitDone.log ]; do sleep 1; done"
+    ]
+  }
+
+}          

@@ -58,8 +58,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     --arg cluster $(echo $vcenter | jq -r .cluster) \
     --arg datastore $(echo $vcenter | jq -r .datastore) \
     --arg count $count \
-    --arg cl_se_name $(cat nsxt.json | jq -r .nsxt.cl_se_name) \
-    '{dc: $dc, cluster: $cluster, datastore: $datastore, count: $count, cl_se_name: $cl_se_name}' | tee config.json >/dev/null
+    '{dc: $dc, cluster: $cluster, datastore: $datastore, count: $count}' | tee config.json >/dev/null
     python3 python/template.py template/vsphere_infrastructure.j2 config.json vsphere_infrastructure$count.tf
     rm config.json
 #    echo "" | tee vsphere_infrastructure_other_$count.tf >/dev/null
@@ -201,14 +200,8 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 #        echo "" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
          jq -n \
          --arg dc $(echo $vcenter | jq -r .dc) \
-         --arg folder_avi $(cat nsxt.json | jq -r .nsxt.folder_avi) \
-         --arg cl_avi_name $(cat nsxt.json | jq -r .nsxt.cl_avi_name) \
-         --arg item_name_avi $(basename $(cat nsxt.json | jq -r .nsxt.aviOva)) \
-         --arg aviOva $(cat nsxt.json | jq -r .nsxt.aviOva) \
-         --arg item_name_jump $(basename $(cat nsxt.json | jq -r .nsxt.ubuntuJump)) \
-         --arg ubuntuJump $(cat nsxt.json | jq -r .nsxt.ubuntuJump) \
          --arg count $count \
-         '{dc: $dc, folder_avi: $folder_avi, cl_avi_name: $cl_avi_name, item_name_avi: $item_name_avi, aviOva: $aviOva, item_name_jump: $item_name_jump, ubuntuJump: $ubuntuJump, count: $count}' | tee config.json >/dev/null
+         '{dc: $dc, count: $count}' | tee config.json >/dev/null
          python3 python/template.py template/vsphere_infrastructure_avi.j2 config.json vsphere_infrastructure_avi$count.tf
          rm config.json
         #
@@ -386,16 +379,10 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         jq -n \
         --arg dc $(echo $vcenter | jq -r .dc) \
-        --arg folder_app $(cat nsxt.json | jq -r .nsxt.folder_application) \
-         --arg cl_app_name $(cat nsxt.json | jq -r .nsxt.cl_app_name) \
-         --arg item_name_ubuntuApp $(basename $(cat nsxt.json | jq -r .nsxt.ubuntuApp)) \
-         --arg aviOva $(cat nsxt.json | jq -r .nsxt.aviOva) \
-         --arg item_name_jump $(basename $(cat nsxt.json | jq -r .nsxt.ubuntuJump)) \
-         --arg ubuntuJump $(cat nsxt.json | jq -r .nsxt.ubuntuJump) \
-         --arg count $count \
-         '{dc: $dc, folder_app: $folder_app, cl_app_name: $cl_app_name, item_name_ubuntuApp: $item_name_ubuntuApp, count: $count}' | tee config.json >/dev/null
-         python3 python/template.py template/vsphere_infrastructure_app.j2 config.json vsphere_infrastructure_app$count.tf
-         rm config.json
+        --arg count $count \
+        '{dc: $dc, count: $count}' | tee config.json >/dev/null
+        python3 python/template.py template/vsphere_infrastructure_app.j2 config.json vsphere_infrastructure_app$count.tf
+        rm config.json
 #        echo "data \"vsphere_folder\" \"folderApp$count\" {" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
 #        echo "  provider = vsphere.vcenter$(echo $count)" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
 #        echo "  path = \"/$(echo $vcenter | jq -r .dc)/vm/$(cat nsxt.json | jq -c -r .nsxt.folder_application)\"" | tee -a vsphere_infrastructure_other_$count.tf >/dev/null
@@ -429,105 +416,122 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_backend.dhcp) == false ]]
         then
           cp userdata/backend.userdata.static userdata/backend.userdata
-          echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf >/dev/null
-          echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf >/dev/null
-          echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf >/dev/null
-          echo "  vars = {" | tee -a backend$count.tf >/dev/null
-          echo "    defaultGw          = split(\"/\", var.nsxt.network_backend.defaultGateway)[0]" | tee -a backend$count.tf >/dev/null
-          echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf >/dev/null
-          echo "    ip                 = cidrhost(var.nsxt.network_backend.defaultGateway, element(var.nsxt.network_backend.backend_ips, count.index + $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter)))))" | tee -a backend$count.tf >/dev/null
-          echo "    mask               = split(\"/\", var.nsxt.network_backend.defaultGateway)[1]" | tee -a backend$count.tf >/dev/null
-          echo "    netplanFile        = var.backend.netplanFile" | tee -a backend$count.tf >/dev/null
-          echo "    dns                = var.nsxt.network_backend.dns" | tee -a backend$count.tf >/dev/null
-          echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf >/dev/null
-          echo "    username           = var.backend.username" | tee -a backend$count.tf >/dev/null
-          echo "  }" | tee -a backend$count.tf >/dev/null
-          echo "}" | tee -a backend$count.tf >/dev/null
+          jq -n \
+          --arg count_app $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter))) \
+          --arg count $count \
+          '{count_app: $count_app, count: $count}' | tee config.json >/dev/null
+          python3 python/template.py template/backend_static.j2 config.json backend_static_$count.tf
+          rm config.json
+#          echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf >/dev/null
+#          echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf >/dev/null
+#          echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf >/dev/null
+#          echo "  vars = {" | tee -a backend$count.tf >/dev/null
+#          echo "    defaultGw          = split(\"/\", var.nsxt.network_backend.defaultGateway)[0]" | tee -a backend$count.tf >/dev/null
+#          echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf >/dev/null
+#          echo "    ip                 = cidrhost(var.nsxt.network_backend.defaultGateway, element(var.nsxt.network_backend.backend_ips, count.index + $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter)))))" | tee -a backend$count.tf >/dev/null
+#          echo "    mask               = split(\"/\", var.nsxt.network_backend.defaultGateway)[1]" | tee -a backend$count.tf >/dev/null
+#          echo "    netplanFile        = var.backend.netplanFile" | tee -a backend$count.tf >/dev/null
+#          echo "    dns                = var.nsxt.network_backend.dns" | tee -a backend$count.tf >/dev/null
+#          echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf >/dev/null
+#          echo "    username           = var.backend.username" | tee -a backend$count.tf >/dev/null
+#          echo "  }" | tee -a backend$count.tf >/dev/null
+#          echo "}" | tee -a backend$count.tf >/dev/null
         fi
         #
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_backend.dhcp) == true ]]
         then
           cp userdata/backend.userdata.dhcp userdata/backend.userdata
-          echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf >/dev/null
-          echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf >/dev/null
-          echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf >/dev/null
-          echo "  vars = {" | tee -a backend$count.tf >/dev/null
-          echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf >/dev/null
-          echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf >/dev/null
-          echo "    username           = var.backend.username" | tee -a backend$count.tf >/dev/null
-          echo "  }" | tee -a backend$count.tf >/dev/null
-          echo "}" | tee -a backend$count.tf >/dev/null
+          jq -n \
+          --arg count_app $((count_app*$(cat nsxt.json | jq .nsxt.backend_per_vcenter))) \
+          --arg count $count \
+          '{count_app: $count_app, count: $count}' | tee config.json >/dev/null
+          python3 python/template.py template/backend_dhcp.j2 config.json backend_dhcp_$count.tf
+          rm config.json
+#          echo "data \"template_file\" \"backend$count\" {" | tee backend$count.tf >/dev/null
+#          echo "  count = $(cat nsxt.json | jq .nsxt.backend_per_vcenter)" | tee -a backend$count.tf >/dev/null
+#          echo "  template = file(\"userdata/backend.userdata\")" | tee -a backend$count.tf >/dev/null
+#          echo "  vars = {" | tee -a backend$count.tf >/dev/null
+#          echo "    pubkey             = file(var.jump.public_key_path)" | tee -a backend$count.tf >/dev/null
+#          echo "    url_demovip_server = var.backend.url_demovip_server" | tee -a backend$count.tf >/dev/null
+#          echo "    username           = var.backend.username" | tee -a backend$count.tf >/dev/null
+#          echo "  }" | tee -a backend$count.tf >/dev/null
+#          echo "}" | tee -a backend$count.tf >/dev/null
         fi
         #
         #
-        echo "resource \"vsphere_virtual_machine\" \"backend$count\" {" | tee -a backend$count.tf >/dev/null
-        echo "  provider          = vsphere.vcenter$(echo $count)" | tee -a backend$count.tf >/dev/null
-        echo "  count             = $(cat nsxt.json | jq -r .nsxt.backend_per_vcenter)" | tee -a backend$count.tf >/dev/null
-        echo "  name              = \"backend-\${count.index}\"" | tee -a backend$count.tf >/dev/null
-        echo "  datastore_id      = data.vsphere_datastore.datastore$count.id" | tee -a backend$count.tf >/dev/null
-        echo "  resource_pool_id  = data.vsphere_resource_pool.pool$count.id" | tee -a backend$count.tf >/dev/null
-        echo "  folder            = data.vsphere_folder.folderApp$count.path" | tee -a backend$count.tf >/dev/null
-        echo "  network_interface {" | tee -a backend$count.tf >/dev/null
-        echo "    network_id = data.vsphere_network.networkBackend$count.id" | tee -a backend$count.tf >/dev/null
-        echo "  }" | tee -a backend$count.tf >/dev/null
-        echo "  num_cpus = var.backend.cpu" | tee -a backend$count.tf >/dev/null
-        echo "  memory = var.backend.memory" | tee -a backend$count.tf >/dev/null
-        echo "  wait_for_guest_net_routable = var.backend.wait_for_guest_net_routable" | tee -a backend$count.tf >/dev/null
-        echo "  guest_id = \"guestid-backend-\${count.index}\"" | tee -a backend$count.tf >/dev/null
-        echo "  disk {" | tee -a backend$count.tf >/dev/null
-        echo "    size             = var.backend.disk" | tee -a backend$count.tf >/dev/null
-        echo "    label            = \"backend-\${count.index}.lab_vmdk\"" | tee -a backend$count.tf >/dev/null
-        echo "    thin_provisioned = true" | tee -a backend$count.tf >/dev/null
-        echo "  }" | tee -a backend$count.tf >/dev/null
-        echo "  cdrom {" | tee -a backend$count.tf >/dev/null
-        echo "    client_device = true" | tee -a backend$count.tf >/dev/null
-        echo "  }" | tee -a backend$count.tf >/dev/null
-        echo "  clone {" | tee -a backend$count.tf >/dev/null
-        echo "    template_uuid = vsphere_content_library_item.ubuntu$count.id" | tee -a backend$count.tf >/dev/null
-        echo "  }" | tee -a backend$count.tf >/dev/null
-        echo "  vapp {" | tee -a backend$count.tf >/dev/null
-        echo "    properties = {" | tee -a backend$count.tf >/dev/null
-        echo "      hostname    = \"backend-\${count.index}\"" | tee -a backend$count.tf >/dev/null
-        echo "      public-keys = file(var.jump.public_key_path)" | tee -a backend$count.tf >/dev/null
-        echo "      user-data   = base64encode(data.template_file.backend$count[count.index].rendered)" | tee -a backend$count.tf >/dev/null
-        echo "    }" | tee -a backend$count.tf >/dev/null
-        echo "  }" | tee -a backend$count.tf >/dev/null
-        echo "  connection {" | tee -a backend$count.tf >/dev/null
-        echo "    host        = self.default_ip_address" | tee -a backend$count.tf >/dev/null
-        echo "    type        = \"ssh\"" | tee -a backend$count.tf >/dev/null
-        echo "    agent       = false" | tee -a backend$count.tf >/dev/null
-        echo "    user        = var.backend.username" | tee -a backend$count.tf >/dev/null
-        echo "    private_key = file(var.jump.private_key_path)" | tee -a backend$count.tf >/dev/null
-        echo "    }" | tee -a backend$count.tf >/dev/null
-        echo "" | tee -a backend$count.tf >/dev/null
-        echo "  provisioner \"remote-exec\" {" | tee -a backend$count.tf >/dev/null
-        echo "    inline      = [" | tee -a backend$count.tf >/dev/null
-        echo "      \"while [ ! -f /tmp/cloudInitDone.log ]; do sleep 1; done\"" | tee -a backend$count.tf >/dev/null
-        echo "    ]" | tee -a backend$count.tf >/dev/null
-        echo "  }" | tee -a backend$count.tf >/dev/null
-        echo "}" | tee -a backend$count.tf >/dev/null
+#        echo "resource \"vsphere_virtual_machine\" \"backend$count\" {" | tee -a backend$count.tf >/dev/null
+#        echo "  provider          = vsphere.vcenter$(echo $count)" | tee -a backend$count.tf >/dev/null
+#        echo "  count             = $(cat nsxt.json | jq -r .nsxt.backend_per_vcenter)" | tee -a backend$count.tf >/dev/null
+#        echo "  name              = \"backend-\${count.index}\"" | tee -a backend$count.tf >/dev/null
+#        echo "  datastore_id      = data.vsphere_datastore.datastore$count.id" | tee -a backend$count.tf >/dev/null
+#        echo "  resource_pool_id  = data.vsphere_resource_pool.pool$count.id" | tee -a backend$count.tf >/dev/null
+#        echo "  folder            = data.vsphere_folder.folderApp$count.path" | tee -a backend$count.tf >/dev/null
+#        echo "  network_interface {" | tee -a backend$count.tf >/dev/null
+#        echo "    network_id = data.vsphere_network.networkBackend$count.id" | tee -a backend$count.tf >/dev/null
+#        echo "  }" | tee -a backend$count.tf >/dev/null
+#        echo "  num_cpus = var.backend.cpu" | tee -a backend$count.tf >/dev/null
+#        echo "  memory = var.backend.memory" | tee -a backend$count.tf >/dev/null
+#        echo "  wait_for_guest_net_routable = var.backend.wait_for_guest_net_routable" | tee -a backend$count.tf >/dev/null
+#        echo "  guest_id = \"guestid-backend-\${count.index}\"" | tee -a backend$count.tf >/dev/null
+#        echo "  disk {" | tee -a backend$count.tf >/dev/null
+#        echo "    size             = var.backend.disk" | tee -a backend$count.tf >/dev/null
+#        echo "    label            = \"backend-\${count.index}.lab_vmdk\"" | tee -a backend$count.tf >/dev/null
+#        echo "    thin_provisioned = true" | tee -a backend$count.tf >/dev/null
+#        echo "  }" | tee -a backend$count.tf >/dev/null
+#        echo "  cdrom {" | tee -a backend$count.tf >/dev/null
+#        echo "    client_device = true" | tee -a backend$count.tf >/dev/null
+#        echo "  }" | tee -a backend$count.tf >/dev/null
+#        echo "  clone {" | tee -a backend$count.tf >/dev/null
+#        echo "    template_uuid = vsphere_content_library_item.ubuntu$count.id" | tee -a backend$count.tf >/dev/null
+#        echo "  }" | tee -a backend$count.tf >/dev/null
+#        echo "  vapp {" | tee -a backend$count.tf >/dev/null
+#        echo "    properties = {" | tee -a backend$count.tf >/dev/null
+#        echo "      hostname    = \"backend-\${count.index}\"" | tee -a backend$count.tf >/dev/null
+#        echo "      public-keys = file(var.jump.public_key_path)" | tee -a backend$count.tf >/dev/null
+#        echo "      user-data   = base64encode(data.template_file.backend$count[count.index].rendered)" | tee -a backend$count.tf >/dev/null
+#        echo "    }" | tee -a backend$count.tf >/dev/null
+#        echo "  }" | tee -a backend$count.tf >/dev/null
+#        echo "  connection {" | tee -a backend$count.tf >/dev/null
+#        echo "    host        = self.default_ip_address" | tee -a backend$count.tf >/dev/null
+#        echo "    type        = \"ssh\"" | tee -a backend$count.tf >/dev/null
+#        echo "    agent       = false" | tee -a backend$count.tf >/dev/null
+#        echo "    user        = var.backend.username" | tee -a backend$count.tf >/dev/null
+#        echo "    private_key = file(var.jump.private_key_path)" | tee -a backend$count.tf >/dev/null
+#        echo "    }" | tee -a backend$count.tf >/dev/null
+#        echo "" | tee -a backend$count.tf >/dev/null
+#        echo "  provisioner \"remote-exec\" {" | tee -a backend$count.tf >/dev/null
+#        echo "    inline      = [" | tee -a backend$count.tf >/dev/null
+#        echo "      \"while [ ! -f /tmp/cloudInitDone.log ]; do sleep 1; done\"" | tee -a backend$count.tf >/dev/null
+#        echo "    ]" | tee -a backend$count.tf >/dev/null
+#        echo "  }" | tee -a backend$count.tf >/dev/null
+#        echo "}" | tee -a backend$count.tf >/dev/null
         #
         #
-        echo "resource \"nsxt_policy_group\" \"backend$count\" {" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "  display_name = \"EasyAvi-Backend-vCenter$count\"" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "  criteria {" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "    condition {" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "      key = \"Tag\"" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "      member_type = \"VirtualMachine\"" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "      operator = \"EQUALS\"" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "      value = \"EasyAvi - Backend - vCenter$count\"" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "    }" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "  }" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "}" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "" | tee -a nsxt_pool$count.tf >/dev/null
-        #
-        echo "resource \"nsxt_vm_tags\" \"backend$count\" {" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "  count = var.nsxt.backend_per_vcenter - 1" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "  instance_id = vsphere_virtual_machine.backend$count[count.index].id" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "  tag {" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "    tag   = \"EasyAvi - Backend - vCenter$count\"" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "  }" | tee -a nsxt_pool$count.tf >/dev/null
-        echo "}" | tee -a nsxt_pool$count.tf >/dev/null
+        jq -n \
+        --arg count $count \
+        '{count: $count}' | tee config.json >/dev/null
+        python3 python/template.py template/nsxt_policy_group.j2 config.json nsxt_policy_group_$count.tf
+        rm config.json
+#        echo "resource \"nsxt_policy_group\" \"backend$count\" {" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "  display_name = \"EasyAvi-Backend-vCenter$count\"" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "  criteria {" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "    condition {" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "      key = \"Tag\"" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "      member_type = \"VirtualMachine\"" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "      operator = \"EQUALS\"" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "      value = \"EasyAvi - Backend - vCenter$count\"" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "    }" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "  }" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "}" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "" | tee -a nsxt_pool$count.tf >/dev/null
+#        #
+#        echo "resource \"nsxt_vm_tags\" \"backend$count\" {" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "  count = var.nsxt.backend_per_vcenter - 1" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "  instance_id = vsphere_virtual_machine.backend$count[count.index].id" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "  tag {" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "    tag   = \"EasyAvi - Backend - vCenter$count\"" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "  }" | tee -a nsxt_pool$count.tf >/dev/null
+#        echo "}" | tee -a nsxt_pool$count.tf >/dev/null
         #
         count_app=$((count_app+1))
     fi
