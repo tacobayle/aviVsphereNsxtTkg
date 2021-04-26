@@ -21,7 +21,7 @@ count_app=0
 for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
   do
     export GOVC_DATACENTER=$(echo $vcenter | jq -r .dc)
-    export GOVC_URL=$(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .username"):$(echo $vcenter_credentials | jq -r ".vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
+    export GOVC_URL=$(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .username"):$(echo $TF_VAR_vcenter_credentials | jq -r ".vcenter_credentials[$count] .password")@$(echo $vcenter | jq -r .vsphere_server)
     export GOVC_INSECURE=true
     export GOVC_DATASTORE=$(echo $vcenter | jq -r .datastore)
     echo ""
@@ -36,8 +36,8 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     fi
 #    echo "" | tee provider_vcenter$count.tf >/dev/null
 #    echo "provider \"vsphere\" {" | tee -a provider_vcenter$count.tf >/dev/null
-#    echo "  user                 = $(echo $vcenter_credentials | jq ".vcenter_credentials[$count] .username")" | tee -a provider_vcenter$count.tf >/dev/null
-#    echo "  password             = $(echo $vcenter_credentials | jq ".vcenter_credentials[$count] .password")" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "  user                 = $(echo $TF_VAR_vcenter_credentials | jq ".vcenter_credentials[$count] .username")" | tee -a provider_vcenter$count.tf >/dev/null
+#    echo "  password             = $(echo $TF_VAR_vcenter_credentials | jq ".vcenter_credentials[$count] .password")" | tee -a provider_vcenter$count.tf >/dev/null
 #    echo "  vsphere_server       = $(echo $vcenter | jq .vsphere_server)" | tee -a provider_vcenter$count.tf >/dev/null
 #    echo "  alias                = \"vcenter$(echo $count)\""  | tee -a provider_vcenter$count.tf >/dev/null
 #    echo "  allow_unverified_ssl = true"  | tee -a provider_vcenter$count.tf >/dev/null
