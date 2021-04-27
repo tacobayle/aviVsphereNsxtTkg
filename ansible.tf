@@ -59,7 +59,6 @@ resource "null_resource" "ansible" {
   }
 }
 
-
 resource "null_resource" "ansible2" {
   depends_on = [null_resource.ansible]
   connection {
@@ -77,32 +76,7 @@ resource "null_resource" "ansible2" {
   }
 }
 
-
-//data "template_file" "destroy" {
-//  template = file("${path.module}/template/destroy.sh.tmpl")
-//  vars = {
-//    privateKey = var.jump.private_key_path
-//    jump_ip = vsphere_virtual_machine.jump.default_ip_address
-//    aviPbAbsentUrl = var.ansible.aviPbAbsentUrl
-//    aviPbAbsentTag = var.ansible.aviPbAbsentTag
-//    aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile
-//  }
-//}
-//
-//resource "null_resource" "destroy" {
-//  provisioner "local-exec" {
-//    command = "echo \"${data.template_file.destroy.rendered}\" | tee -a destroy.sh"
-//  }
-//}
-
 resource "local_file" "destroy" {
   content     = templatefile("${path.module}/template/destroy.sh.tmpl", { privateKey = var.jump.private_key_path, jump_ip = vsphere_virtual_machine.jump.default_ip_address, aviPbAbsentUrl = var.ansible.aviPbAbsentUrl, aviPbAbsentTag = var.ansible.aviPbAbsentTag, aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile })
   filename = "${path.module}/destroy.sh"
 }
-
-//resource "null_resource" "se_exclusion_list" {
-//  count = (var.no_access_vcenter.nsxt_exclusion_list == true ? 1 : 0)
-//  provisioner "local-exec" {
-//    command = "python3 python/pyVMC2.py ${var.vmc_nsx_token} ${var.vmc_org_id} ${var.vmc_sddc_id} append-exclude-list ${nsxt_policy_group.se[count.index].path}"
-//  }
-//}
