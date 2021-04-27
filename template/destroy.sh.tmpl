@@ -33,6 +33,7 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     do
       if [[ $(basename $vm) == EasyAvi-se* ]]
       then
+        app_destroy=true
         echo "removing VM called $(basename $vm)"
         govc vm.destroy $(basename $vm)
       fi
@@ -40,10 +41,13 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     #
     count=$((count+1))
   done
-echo ""
-echo "Waiting for 120 seconds"
-echo ""
-sleep 120
+if [ "$app_destroy" = true ]
+then
+  echo ""
+  echo "Waiting for 120 seconds"
+  echo ""
+  sleep 120
+fi
 ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}'
 sleep 10
 echo "TF Refresh"
