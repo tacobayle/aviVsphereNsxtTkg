@@ -162,7 +162,6 @@ resource "time_sleep" "wait_segment_nsxt" {
 resource "nsxt_policy_group" "se_no_access" {
   count = (var.no_access_vcenter.nsxt_se_dfw == true ? 1 : 0)
   display_name = "EasyAvi-SE"
-  domain       = "cgw"
   description  = "EasyAvi-SE"
   criteria {
     condition {

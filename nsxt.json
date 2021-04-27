@@ -138,13 +138,13 @@
     "serviceEngineGroup": [
       {
         "name": "Default-Group",
-        "ha_mode": "HA_MODE_SHARED",
-        "min_scaleout_per_vs": 2,
+        "ha_mode": "HA_MODE_SHARED_PAIR",
+        "min_scaleout_per_vs": 1,
         "buffer_se": 1,
         "extra_shared_config_memory": 0,
         "vcenter_folder": "Avi-SE-Default-Group",
         "vcpus_per_se": 1,
-        "memory_per_se": 2048,
+        "memory_per_se": 1024,
         "disk_per_se": 25,
         "realtime_se_metrics": {
           "enabled": true,
@@ -180,8 +180,8 @@
         "buffer_se": 0,
         "extra_shared_config_memory": 2000,
         "vcenter_folder": "Avi-SE-GSLB",
-        "vcpus_per_se": 2,
-        "memory_per_se": 8192,
+        "vcpus_per_se": 1,
+        "memory_per_se": 1024,
         "disk_per_se": 25,
         "realtime_se_metrics": {
           "enabled": true,

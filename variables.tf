@@ -575,7 +575,7 @@ variable "no_access_vcenter" {
     serviceEngineGroup = [
       {
         name = "Default-Group"
-        numberOfSe = 1
+        numberOfSe = 0
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
@@ -623,7 +623,7 @@ variable "no_access_vcenter" {
         ha_mode = "HA_MODE_SHARED"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
-        vcpus_per_se = "2"
+        vcpus_per_se = "1"
         cpu_reserve = "false"
         memory_per_se = "1024"
         mem_reserve = "false"
