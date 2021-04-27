@@ -69,7 +69,9 @@ resource "null_resource" "ansible_no_access_nsxt_dfw_rule" {
 
   provisioner "remote-exec" {
     inline      = [
-      "git clone ${var.ansible.NsxtModuleUrl} ; cd ${basename(var.ansible.NsxtModuleUrl)} ; git clone ${var.ansible.nsxtConfigureDfwUrl} --branch ${var.ansible.nsxtConfigureDfwTag} ; mv ${basename(var.ansible.nsxtConfigureDfwUrl)}/local.yml ./",
+      "git clone ${var.ansible.NsxtModuleUrl}",
+      "git clone ${var.ansible.nsxtConfigureDfwUrl} --branch ${var.ansible.nsxtConfigureDfwTag}",
+      "cp ${basename(var.ansible.nsxtConfigureDfwUrl)}/local.yml ${basename(var.ansible.NsxtModuleUrl)}/local.yml",
       "cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml --extra-vars '{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": \"no_access_se\", \"policy_scope\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"rule_name\": \"rule1\", \"source_group\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"destination_group\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"rule_scope\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}}'",
     ]
   }
