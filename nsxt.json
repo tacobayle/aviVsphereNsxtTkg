@@ -5,6 +5,7 @@
     "obj_name_prefix": "AVINSXT",
     "nsxt_se_dfw": true,
     "backend_per_vcenter": 3,
+    "application_ports": ["80", "8080"],
     "nsxt_backend_prefix_group_name": "EasyAvi-Backend-vCenter-",
     "domains": [
       {
@@ -75,8 +76,7 @@
         "datastore": "vsanDatastore",
         "vsphere_server": "10.8.0.10",
 	    "avi": true,
-        "application": true,
-        "application_ports": ["80", "8080"]
+        "application": true
       }
     ],
     "controller": {
