@@ -158,6 +158,32 @@ resource "time_sleep" "wait_segment_nsxt" {
   depends_on = [nsxt_policy_segment.networkBackend, nsxt_policy_segment.networkMgmt, nsxt_policy_segment.networkTkg]
   create_duration = "20s"
 }
+
+resource "nsxt_policy_group" "se_no_access" {
+  count = (var.no_access_vcenter.nsxt_se_dfw == true ? 1 : 0)
+  display_name = "EasyAvi-SE"
+  domain       = "cgw"
+  description  = "EasyAvi-SE"
+  criteria {
+    condition {
+      member_type = "VirtualMachine"
+      key = "Name"
+      operator = "STARTSWITH"
+      value = var.no_access_vcenter.se_prefix
+    }
+  }
+}
+
+data "nsxt_policy_group" "se_nsxt" {
+  depends_on = [null_resource.ansible]
+  display_name = "${var.nsxt.obj_name_prefix}-ServiceEngines"
+}
+
+data "nsxt_policy_group" "se_nsxt" {
+  depends_on = [null_resource.ansible]
+  display_name = "${var.nsxt.obj_name_prefix}-ControllerCluster"
+}
+
 //
 //resource "nsxt_policy_group" "backend" {
 //  display_name = var.backend.nsxtGroup.name

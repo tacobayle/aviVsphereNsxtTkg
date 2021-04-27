@@ -105,9 +105,12 @@ variable "ansible" {
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v5.42"
+    aviConfigureTag = "v5.44"
     aviPbAbsentUrl = "https://github.com/tacobayle/ansiblePbAviAbsent"
     aviPbAbsentTag = "v1.51"
+    nsxtConfigureDfwUrl = "https://github.com/tacobayle/ansibleNsxtConfigureDfw"
+    nsxtConfigureDfwTag = "v1.02"
+    NsxtModuleUrl = "https://github.com/vmware/ansible-for-nsxt.git"
   }
 }
 
@@ -500,6 +503,8 @@ variable "no_access_vcenter" {
     dhcp_enabled = false
     application = true # if true, it will create an Avi DNS profile with no_access_vcenter.domains as domains and an Avi IPAM profile
     nsxt_exclusion_list = true
+    nsxt_se_dfw = true
+    se_prefix = "EasyAvi-"
     nsxt = {
 //      server = "10.8.0.20"
       transport_zone = {
