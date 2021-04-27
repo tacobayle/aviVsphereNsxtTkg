@@ -620,7 +620,7 @@ variable "no_access_vcenter" {
         name = "n2-tkg-cluster-01"
         numberOfSe = 2
 //        dhcp = false # only for management
-        ha_mode = "HA_MODE_SHARED"
+        ha_mode = "HA_MODE_SHARED_PAIR"
         min_scaleout_per_vs = "1"
         disk_per_se = "25"
         vcpus_per_se = "1"
