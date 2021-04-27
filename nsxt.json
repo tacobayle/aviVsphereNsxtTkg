@@ -3,6 +3,7 @@
     "name": "cloudNsxt",
     "dhcp_enabled": "false",
     "obj_name_prefix": "AVINSXT",
+    "nsxt_se_dfw": true,
     "backend_per_vcenter": 3,
     "nsxt_backend_prefix_group_name": "EasyAvi-Backend-vCenter-",
     "domains": [
