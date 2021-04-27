@@ -140,8 +140,8 @@
       {
         "name": "Default-Group",
         "ha_mode": "HA_MODE_SHARED_PAIR",
-        "min_scaleout_per_vs": 1,
-        "buffer_se": 1,
+        "min_scaleout_per_vs": 2,
+        "buffer_se": 0,
         "extra_shared_config_memory": 0,
         "vcenter_folder": "Avi-SE-Default-Group",
         "vcpus_per_se": 1,
