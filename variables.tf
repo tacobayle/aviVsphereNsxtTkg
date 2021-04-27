@@ -621,7 +621,7 @@ variable "no_access_vcenter" {
         numberOfSe = 2
 //        dhcp = false # only for management
         ha_mode = "HA_MODE_SHARED_PAIR"
-        min_scaleout_per_vs = "1"
+        min_scaleout_per_vs = "2"
         disk_per_se = "25"
         vcpus_per_se = "1"
         cpu_reserve = "false"
