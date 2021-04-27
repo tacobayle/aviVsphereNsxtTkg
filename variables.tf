@@ -110,7 +110,7 @@ variable "ansible" {
     aviPbAbsentTag = "v1.51"
     nsxtConfigureDfwUrl = "https://github.com/tacobayle/ansibleNsxtConfigureDfw"
     nsxtConfigureDfwTag = "v1.02"
-    NsxtModuleUrl = "https://github.com/vmware/ansible-for-nsxt.git"
+    NsxtModuleUrl = "https://github.com/vmware/ansible-for-nsxt"
   }
 }
 
