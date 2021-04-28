@@ -179,7 +179,7 @@
         "ha_mode": "HA_MODE_SHARED",
         "min_scaleout_per_vs": 1,
         "buffer_se": 0,
-        "extra_shared_config_memory": 2000,
+        "extra_shared_config_memory": 0,
         "vcenter_folder": "Avi-SE-GSLB",
         "vcpus_per_se": 1,
         "memory_per_se": 1024,

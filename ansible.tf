@@ -98,6 +98,6 @@ resource "null_resource" "ansible_no_access_nsxt_dfw_rule" {
 //}
 //
 resource "local_file" "destroy" {
-  content     = templatefile("${path.module}/template/destroy.sh.tmpl", { privateKey = var.jump.private_key_path, jump_ip = vsphere_virtual_machine.jump.default_ip_address, aviPbAbsentUrl = var.ansible.aviPbAbsentUrl, aviPbAbsentTag = var.ansible.aviPbAbsentTag, aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile })
+  content     = templatefile("${path.module}/template/destroy.sh.tmpl", { privateKey = var.jump.private_key_path, jump_ip = vsphere_virtual_machine.jump.default_ip_address, aviPbAbsentUrl = var.ansible.aviPbAbsentUrl, aviPbAbsentTag = var.ansible.aviPbAbsentTag, aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile, NsxtModuleUrl = var.ansible.NsxtModuleUrl, nsx_server = ${jsonencode(var.nsx_server)}, nsx_username = ${jsonencode(var.nsx_username)}, nsx_password = ${jsonencode(var.nsx_password)} })
   filename = "${path.module}/destroy.sh"
 }
