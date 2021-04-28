@@ -12,7 +12,7 @@ data "vsphere_folder" "folderController" {
 
 resource "vsphere_content_library" "libraryAvi{{ count }}" {
   provider        = vsphere.vcenter{{ count }}
-  name            = "var.nsxt.cl_avi_name"
+  name            = var.nsxt.cl_avi_name
   storage_backing = [data.vsphere_datastore.datastore{{ count }}.id]
 }
 
