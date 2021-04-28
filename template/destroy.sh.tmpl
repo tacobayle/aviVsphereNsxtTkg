@@ -56,13 +56,15 @@ echo "Destroy Avi Config"
 echo ""
 echo "++++++++++++++++++++++++++++++++"
 echo "Destroy NSX-T Config"
+/bin/bash destroy_no_access_nsxt.sh
+/bin/bash destroy_nsxt_nsxt.sh
 ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(NsxtModuleUrl)} ; ansible-playbook local.yml -e "ansible_python_interpreter=/usr/bin/python3" --extra-vars "{\"nsx_server\": ${nsx_server}, \"nsx_username\": ${nsx_username}, \"nsx_password\": ${nsx_password}, \"policy_name\": ${policy_name_no_access_vcenter}, \"state\": \"absent\"}"'
-#ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(NsxtModuleUrl)} ; ansible-playbook local.yml -e "ansible_python_interpreter=/usr/bin/python3" --extra-vars "{\"nsx_server\": ${nsx_server}, \"nsx_username\": ${nsx_username}, \"nsx_password\": ${nsx_password}, \"policy_name\": ${policy_name_nsxt}, \"state\": \"absent\"}"'
+#
 sleep 5
 echo "++++++++++++++++++++++++++++++++"
 echo "TF Refresh"
-terraform refresh -var-file=nsxt.json
+terraform refresh -var-file=nsxt.json -var-file=no_access_vcenter.json
 echo ""
 echo "++++++++++++++++++++++++++++++++"
 echo "TF Destroy"
-terraform destroy -auto-approve -var-file=nsxt.json
+terraform destroy -auto-approve -var-file=nsxt.json -var-file=no_access_vcenter.json

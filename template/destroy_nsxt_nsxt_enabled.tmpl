@@ -1,0 +1,2 @@
+#!/bin/bash
+ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(NsxtModuleUrl)} ; ansible-playbook local.yml -e "ansible_python_interpreter=/usr/bin/python3" --extra-vars "{\"nsx_server\": ${nsx_server}, \"nsx_username\": ${nsx_username}, \"nsx_password\": ${nsx_password}, \"policy_name\": ${policy_name_nsxt}, \"state\": \"absent\"}"'

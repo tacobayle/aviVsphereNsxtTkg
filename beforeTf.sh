@@ -234,6 +234,24 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 echo "{}" | tee config.json >/dev/null
 python3 python/template.py template/ansible.j2 config.json ansible.tf
 rm config.json
+#
+#
+if [[ $(cat no_access_vcenter.json | jq -c -r .no_access_vcenter.nsxt_se_dfw.) == true ]]
+then
+  cp template/destroy_no_access_nsxt_enabled.tf destroy_no_access_nsxt_enabled.tf
+else
+  cp template/destroy_no_access_nsxt_disabled.tmpl destroy_no_access_nsxt.sh
+fi
+#
+#
+if [[ $(cat nsxt.json | jq -c -r .nsxt.nsxt_se_dfw.) == true ]]
+then
+  cp template/destroy_nsxt_nsxt_enabled.tf destroy_nsxt_nsxt_enabled.tf
+else
+  cp template/destroy_nsxt_nsxt_disabled.tmpl destroy_nsxt_nsxt.sh
+fi
+#
+#
 if [[ $beforeTfError == 1 ]]
 then
   exit 1
