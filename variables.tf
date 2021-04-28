@@ -504,6 +504,7 @@ variable "no_access_vcenter" {
     application = true # if true, it will create an Avi DNS profile with no_access_vcenter.domains as domains and an Avi IPAM profile
     nsxt_exclusion_list = true
     nsxt_se_dfw = true
+    nsxt_se_dfw_policy_name = "nsxt_se_no_access"
     se_prefix = "EasyAvi-"
     nsxt = {
 //      server = "10.8.0.20"

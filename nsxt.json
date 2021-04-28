@@ -4,6 +4,7 @@
     "dhcp_enabled": false,
     "obj_name_prefix": "AVINSXT",
     "nsxt_se_dfw": true,
+    "nsxt_se_dfw_policy_name": "nsxt_se",
     "backend_per_vcenter": 3,
     "application_ports": ["80", "8080"],
     "nsxt_backend_prefix_group_name": "EasyAvi-Backend-vCenter",

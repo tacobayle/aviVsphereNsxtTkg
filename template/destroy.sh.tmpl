@@ -56,8 +56,8 @@ echo "Destroy Avi Config"
 echo ""
 echo "++++++++++++++++++++++++++++++++"
 echo "Destroy NSX-T Config"
-ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(NsxtModuleUrl)} ; ansible-playbook local.yml -e "ansible_python_interpreter=/usr/bin/python3" --extra-vars "{\"nsx_server\": ${nsx_server}, \"nsx_username\": ${nsx_username}, \"nsx_password\": ${nsx_password}, \"policy_name\": \"no_access_se\", \"state\": \"absent\"}"'
-#ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(NsxtModuleUrl)} ; ansible-playbook local.yml -e "ansible_python_interpreter=/usr/bin/python3" --extra-vars "{\"nsx_server\": ${nsx_server}, \"nsx_username\": ${nsx_username}, \"nsx_password\": ${nsx_password}, \"policy_name\": \"nsxt_se\", \"state\": \"absent\"}"'
+ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(NsxtModuleUrl)} ; ansible-playbook local.yml -e "ansible_python_interpreter=/usr/bin/python3" --extra-vars "{\"nsx_server\": ${nsx_server}, \"nsx_username\": ${nsx_username}, \"nsx_password\": ${nsx_password}, \"policy_name\": ${policy_name_no_access_vcenter}, \"state\": \"absent\"}"'
+#ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(NsxtModuleUrl)} ; ansible-playbook local.yml -e "ansible_python_interpreter=/usr/bin/python3" --extra-vars "{\"nsx_server\": ${nsx_server}, \"nsx_username\": ${nsx_username}, \"nsx_password\": ${nsx_password}, \"policy_name\": ${policy_name_nsxt}, \"state\": \"absent\"}"'
 sleep 5
 echo "++++++++++++++++++++++++++++++++"
 echo "TF Refresh"
