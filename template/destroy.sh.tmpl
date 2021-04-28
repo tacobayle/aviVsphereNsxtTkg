@@ -52,12 +52,12 @@ fi
 echo ""
 echo "++++++++++++++++++++++++++++++++"
 echo "Destroy Avi Config"
-ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}'
+#ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}'
 echo ""
 echo "++++++++++++++++++++++++++++++++"
 echo "Destroy NSX-T Config"
 ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e \'ansible_python_interpreter=/usr/bin/python3\' --extra-vars \'{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": \"no_access_se\"}\'
-ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e \'ansible_python_interpreter=/usr/bin/python3\' --extra-vars \'{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": \"nsxt_se\"}\'
+#ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e \'ansible_python_interpreter=/usr/bin/python3\' --extra-vars \'{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": \"nsxt_se\"}\'
 sleep 5
 echo "++++++++++++++++++++++++++++++++"
 echo "TF Refresh"
