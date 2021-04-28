@@ -44,14 +44,17 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
 if [ "$app_destroy" = true ]
 then
   echo ""
+  echo "++++++++++++++++++++++++++++++++"
   echo "Waiting for 120 seconds"
   echo ""
   sleep 120
 fi
 ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}'
-sleep 10
+sleep 5
+echo "++++++++++++++++++++++++++++++++"
 echo "TF Refresh"
 terraform refresh -var-file=nsxt.json
 echo ""
+echo "++++++++++++++++++++++++++++++++"
 echo "TF Destroy"
 terraform destroy -auto-approve -var-file=nsxt.json
