@@ -76,7 +76,7 @@
         "datastore": "vsanDatastore",
         "vsphere_server": "10.8.0.10",
 	    "avi": true,
-        "application": true
+        "application": false
       }
     ],
     "controller": {

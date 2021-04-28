@@ -121,11 +121,11 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
         #
         if [[ $(cat nsxt.json | jq -c -r .nsxt.network_management.dhcp) == false ]]
         then
-          jq -n \
-          --arg count $count \
-          '{count: $count}' | tee config.json >/dev/null
-          python3 python/template.py template/controller_static.j2 config.json controller_static$count.tf
-          rm config.json
+#          jq -n \
+#          --arg count $count \
+#          '{count: $count}' | tee config.json >/dev/null
+#          python3 python/template.py template/controller_static.j2 config.json controller_static$count.tf
+#          rm config.json
           #
           cp userdata/jump.userdata.static userdata/jump.userdata
           jq -n \
