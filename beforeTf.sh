@@ -236,7 +236,7 @@ python3 python/template.py template/ansible.j2 config.json ansible.tf
 rm config.json
 #
 #
-if [[ $(cat no_access_vcenter.json | jq -c -r .no_access_vcenter.nsxt_se_dfw.) == true ]]
+if [[ $(cat no_access_vcenter.json | jq -c -r .no_access_vcenter.nsxt_se_dfw) == true ]]
 then
   cp template/destroy_no_access_nsxt_enabled.tf destroy_no_access_nsxt_enabled.tf
 else
@@ -244,7 +244,7 @@ else
 fi
 #
 #
-if [[ $(cat nsxt.json | jq -c -r .nsxt.nsxt_se_dfw.) == true ]]
+if [[ $(cat nsxt.json | jq -c -r .nsxt.nsxt_se_dfw) == true ]]
 then
   cp template/destroy_nsxt_nsxt_enabled.tf destroy_nsxt_nsxt_enabled.tf
 else
