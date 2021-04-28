@@ -97,7 +97,7 @@ resource "null_resource" "ansible_no_access_nsxt_dfw_rule" {
 //  }
 //}
 //
-//resource "local_file" "destroy" {
-//  content     = templatefile("${path.module}/template/destroy.sh.tmpl", { privateKey = var.jump.private_key_path, jump_ip = vsphere_virtual_machine.jump.default_ip_address, aviPbAbsentUrl = var.ansible.aviPbAbsentUrl, aviPbAbsentTag = var.ansible.aviPbAbsentTag, aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile })
-//  filename = "${path.module}/destroy.sh"
-//}
+resource "local_file" "destroy" {
+  content     = templatefile("${path.module}/template/destroy.sh.tmpl", { privateKey = var.jump.private_key_path, jump_ip = vsphere_virtual_machine.jump.default_ip_address, aviPbAbsentUrl = var.ansible.aviPbAbsentUrl, aviPbAbsentTag = var.ansible.aviPbAbsentTag, aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile })
+  filename = "${path.module}/destroy.sh"
+}
