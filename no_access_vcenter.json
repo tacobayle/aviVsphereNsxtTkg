@@ -6,7 +6,7 @@
     "application": true,
     "nsxt_exclusion_list": true,
     "nsxt_se_dfw": true,
-    "nsxt_se_dfw_policy_name": "nsxt_se_no_access",
+    "nsxt_se_dfw_policy_name": "no_access_se",
     "se_prefix": "EasyAvi-",
     "nsxt": {
       "transport_zone": {

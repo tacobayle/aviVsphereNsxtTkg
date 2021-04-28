@@ -64,12 +64,8 @@ variable "jump" {
     public_key_path = "~/.ssh/id_rsa/ubuntu-bionic-18.04-cloudimg-template.key.pub"
     private_key_path = "~/.ssh/id_rsa/ubuntu-bionic-18.04-cloudimg-template.key"
     wait_for_guest_net_routable = "false"
-//    template_name = "ubuntu-bionic-18.04-cloudimg-template"
     aviSdkVersion = "18.2.9"
-//    ipCidr = "10.15.3.210/24"
     netplanFile = "/etc/netplan/50-cloud-init.yaml"
-//    defaultGw = "10.15.3.1"
-//    dnsMain = "172.18.0.15"
     username = "ubuntu"
   }
 }
@@ -79,35 +75,20 @@ variable "backend" {
     cpu = 1
     memory = 2048
     disk = 10
-//    network = "N1-T1_Segment-Backend_10.7.6.0-24"
     wait_for_guest_net_routable = "false"
     template_name = "ubuntu-bionic-18.04-cloudimg-template"
     netplanFile = "/etc/netplan/50-cloud-init.yaml"
-//    defaultGw = "10.15.6.1"
     url_demovip_server = "https://github.com/tacobayle/demovip_server"
     username = "ubuntu"
-//    dnsMain = "172.18.0.15"
-//    dnsSec = "10.206.8.131"
-//    subnetMask = "/24"
-//    nsxtGroup = {
-//      name = "n1-avi-backend"
-//      description = "Created by TF - For Avi Build"
-//      tag = "n1-avi-backend"
-//    }
   }
 }
-
-//variable "backendIps" {
-//  type = list
-//  default = ["10.15.6.10", "10.15.6.11", "10.15.6.12"]
-//}
 
 variable "ansible" {
   type = map
   default = {
     version = "2.9.12"
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
-    aviConfigureTag = "v5.52"
+    aviConfigureTag = "v5.54"
     aviPbAbsentUrl = "https://github.com/tacobayle/ansiblePbAviAbsent"
     aviPbAbsentTag = "v1.51"
     nsxtConfigureDfwUrl = "https://github.com/tacobayle/ansibleNsxtConfigureDfw"
