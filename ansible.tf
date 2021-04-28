@@ -1,16 +1,16 @@
-resource "null_resource" "ansible_hosts_static1" {
-  provisioner "local-exec" {
-    command = "echo '---' | tee hosts ; echo 'all:' | tee -a hosts ; echo '  children:' | tee -a hosts ; echo '    controller:' | tee -a hosts ; echo '      hosts:' | tee -a hosts"
-  }
-}
-
-resource "null_resource" "ansible_hosts_controllers_dynamic" {
-  depends_on = [null_resource.ansible_hosts_static1]
-  count      = (var.nsxt.controller.cluster == true ? 3 : 1)
-  provisioner "local-exec" {
-    command = "echo '        ${vsphere_virtual_machine.controller[count.index].default_ip_address}:' | tee -a hosts"
-  }
-}
+//resource "null_resource" "ansible_hosts_static1" {
+//  provisioner "local-exec" {
+//    command = "echo '---' | tee hosts ; echo 'all:' | tee -a hosts ; echo '  children:' | tee -a hosts ; echo '    controller:' | tee -a hosts ; echo '      hosts:' | tee -a hosts"
+//  }
+//}
+//
+//resource "null_resource" "ansible_hosts_controllers_dynamic" {
+//  depends_on = [null_resource.ansible_hosts_static1]
+//  count      = (var.nsxt.controller.cluster == true ? 3 : 1)
+//  provisioner "local-exec" {
+//    command = "echo '        ${vsphere_virtual_machine.controller[count.index].default_ip_address}:' | tee -a hosts"
+//  }
+//}
 
 //resource "null_resource" "ansible" {
 //  depends_on = [vsphere_virtual_machine.jump, null_resource.ansible_hosts_controllers_dynamic]
