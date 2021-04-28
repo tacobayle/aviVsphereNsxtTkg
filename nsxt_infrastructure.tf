@@ -173,15 +173,15 @@ resource "nsxt_policy_group" "se_no_access" {
   }
 }
 
-//data "nsxt_policy_group" "se_nsxt" {
-//  depends_on = [null_resource.ansible]
-//  display_name = "${var.nsxt.obj_name_prefix}-ServiceEngines"
-//}
-//
-//data "nsxt_policy_group" "controller_nsxt" {
-//  depends_on = [null_resource.ansible]
-//  display_name = "${var.nsxt.obj_name_prefix}-ControllerCluster"
-//}
+data "nsxt_policy_group" "se_nsxt" {
+  depends_on = [null_resource.ansible]
+  display_name = "${var.nsxt.obj_name_prefix}-ServiceEngines"
+}
+
+data "nsxt_policy_group" "controller_nsxt" {
+  depends_on = [null_resource.ansible]
+  display_name = "${var.nsxt.obj_name_prefix}-ControllerCluster"
+}
 
 //
 //resource "nsxt_policy_group" "backend" {
