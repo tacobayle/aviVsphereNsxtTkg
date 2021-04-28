@@ -93,7 +93,7 @@
               "21",
               "22"
             ],
-            dhcp: false
+            "dhcp": false
           },
           {
             "name": "N2-T1_Segment-VIP-B_10.15.8.0-24",
@@ -136,7 +136,7 @@
               "23",
               "24"
             ],
-            dhcp: false
+            "dhcp": false
           },
           {
             "name": "N2-T1_Segment-VIP-B_10.15.8.0-24",
