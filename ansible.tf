@@ -22,11 +22,6 @@
 //    private_key = file(var.jump.private_key_path)
 //  }
 //
-//  provisioner "remote-exec" {
-//    inline      = [
-//      "while [ ! -f /tmp/cloudInitDone.log ]; do sleep 1; done"
-//    ]
-//  }
 //
 //  provisioner "file" {
 //    source      = var.jump.private_key_path
