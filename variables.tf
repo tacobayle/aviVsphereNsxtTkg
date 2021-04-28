@@ -13,6 +13,8 @@ variable "nsxt" {}
 
 variable "vcenter_credentials" {}
 
+variable "no_access_vcenter" {}
+
 //variable "contentLibrary" {
 //  default = {
 //    name = "Avi Content Library"
@@ -496,231 +498,231 @@ variable "ansible" {
 //}
 
 
-variable "no_access_vcenter" {
-  default = {
-    name = "cloudNoAccess"
-    environment = "vsphere"
-    dhcp_enabled = false
-    application = true # if true, it will create an Avi DNS profile with no_access_vcenter.domains as domains and an Avi IPAM profile
-    nsxt_exclusion_list = true
-    nsxt_se_dfw = true
-    nsxt_se_dfw_policy_name = "nsxt_se_no_access"
-    se_prefix = "EasyAvi-"
-    nsxt = {
-//      server = "10.8.0.20"
-      transport_zone = {
-        name = "N2_TZ_nested_nsx-overlay"
-      }
-      tier1s = [
-        {
-          name = "N2-T1_AVI_3"
-          description = "N2-T1_AVI_3"
-          route_advertisement_types = [
-            "TIER1_STATIC_ROUTES",
-            "TIER1_CONNECTED",
-            "TIER1_LB_VIP"]
-          # TIER1_LB_VIP needs to be tested - 20.1.3 TOI
-          tier0 = "N2_T0"
-        }
-      ]
-//      network_management = {
-//        name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
-//        tier1 = "N2-T1_AVI"
-//        defaultGateway = "10.15.3.1/24"
+//variable "no_access_vcenter" {
+//  default = {
+//    name = "cloudNoAccess"
+//    environment = "vsphere"
+//    dhcp_enabled = false
+//    application = true # if true, it will create an Avi DNS profile with no_access_vcenter.domains as domains and an Avi IPAM profile
+//    nsxt_exclusion_list = true
+//    nsxt_se_dfw = true
+//    nsxt_se_dfw_policy_name = "nsxt_se_no_access"
+//    se_prefix = "EasyAvi-"
+//    nsxt = {
+////      server = "10.8.0.20"
+//      transport_zone = {
+//        name = "N2_TZ_nested_nsx-overlay"
 //      }
-//      network_vip = {
-//        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
-//        tier1 = "N2-T1_AVI"
-//        defaultGateway = "10.15.4.1/24"
-//      }
-      networks_data = [
-        {
-          name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
-          tier1 = "N2-T1_AVI_3"
-          defaultGateway = "10.15.7.1/24"
-        },
-        {
-          name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
-          tier1 = "N2-T1_AVI_3"
-          defaultGateway = "10.15.8.1/24"
-        }
-      ]
-    }
-    vcenter = {
-      dc = "N2-DC"
-      cluster = "N2-Cluster1"
-      datastore = "vsanDatastore"
-      resource_pool = "N2-Cluster1/Resources"
-      folderAvi = "Avi-Controllers"
-    }
-    domains = [
-      {
-        name = "tkg.altherr.info"
-      }
-    ]
-    network_management = {
-      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for jump and Avi Controller
-      defaultGateway = "10.15.3.1/24"
-    }
-    network_vip = {
-      name = "N2-T1_Segment-VIP-A_10.15.7.0-24" # this is used for Avi IPAM profile config.
-      defaultGateway = "10.15.7.1/24"
-//      defaultGatewaySe = true
-      type = "V4"
-      ipStartPool = "50"
-      ipEndPool = "60"
-      exclude_discovered_subnets = "true"
-      vcenter_dvs = "true"
-      dhcp_enabled = "false"
-    }
-    serviceEngineGroup = [
-      {
-        name = "Default-Group"
-        numberOfSe = 0
-        ha_mode = "HA_MODE_SHARED"
-        min_scaleout_per_vs = "1"
-        disk_per_se = "25"
-        vcpus_per_se = "1"
-        cpu_reserve = "false"
-        memory_per_se = "1024"
-        mem_reserve = "false"
-        extra_shared_config_memory = "0"
-        management_network = {
-          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
-          defaultGateway = "10.15.3.1/24"
-          ips = [
-            "21",
-            "22"
-          ]
-          dhcp = false
-        }
-        data_networks = [
-          {
-            name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
-            defaultGateway = "10.15.7.1/24"
-            defaultGatewaySeGroup = false
-            ips = [
-              "21",
-              "22"
-            ]
-            dhcp = false
-          },
-          {
-            name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
-            defaultGateway = "10.15.8.1/24"
-            defaultGatewaySeGroup = false
-            ips = [
-              "21",
-              "22"
-            ]
-            dhcp = false
-          }
-        ]
-      },
-      {
-        name = "n2-tkc-cluster-01"
-        numberOfSe = 2
-//        dhcp = false # only for management
-        ha_mode = "HA_MODE_SHARED_PAIR"
-        min_scaleout_per_vs = "2"
-        disk_per_se = "25"
-        vcpus_per_se = "1"
-        cpu_reserve = "false"
-        memory_per_se = "1024"
-        mem_reserve = "false"
-        extra_shared_config_memory = "0"
-        management_network = {
-          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
-          defaultGateway = "10.15.3.1/24"
-          ips = [
-            "23",
-            "24"
-          ]
-          dhcp = false
-        }
-        data_networks = [
-          {
-            name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
-            defaultGateway = "10.15.7.1/24"
-            defaultGatewaySeGroup = true
-            ips = [
-              "23",
-              "24"
-            ]
-            dhcp = false
-          },
-          {
-            name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
-            defaultGateway = "10.15.8.1/24"
-            defaultGatewaySeGroup = false
-            ips = [
-              "23",
-              "24"
-            ]
-            dhcp = false
-          }
-        ]
-      }
-    ]
-//    pool = {
-//      name = "pool1"
-//      lb_algorithm = "LB_ALGORITHM_ROUND_ROBIN"
-//    }
-//    pool_opencart = {
-//      name = "pool2-opencart"
-//      lb_algorithm = "LB_ALGORITHM_ROUND_ROBIN"
-//    }
-//    virtualservices = {
-//      http = [
+//      tier1s = [
 //        {
-//          name = "app1"
-//          pool_ref = "pool1"
-//          services: [
-//            {
-//              port = 80
-//              enable_ssl = "false"
-//            },
-//            {
-//              port = 443
-//              enable_ssl = "true"
-//            }
-//          ]
-//        },
-//        {
-//          name = "opencart"
-//          pool_ref = "pool2-opencart"
-//          services: [
-//            {
-//              port = 80
-//              enable_ssl = "false"
-//            },
-//            {
-//              port = 443
-//              enable_ssl = "true"
-//            }
-//          ]
+//          name = "N2-T1_AVI_3"
+//          description = "N2-T1_AVI_3"
+//          route_advertisement_types = [
+//            "TIER1_STATIC_ROUTES",
+//            "TIER1_CONNECTED",
+//            "TIER1_LB_VIP"]
+//          # TIER1_LB_VIP needs to be tested - 20.1.3 TOI
+//          tier0 = "N2_T0"
 //        }
 //      ]
-//      dns = [
+////      network_management = {
+////        name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+////        tier1 = "N2-T1_AVI"
+////        defaultGateway = "10.15.3.1/24"
+////      }
+////      network_vip = {
+////        name = "N2-T1_Segment-VIP-A_10.15.4.0-24"
+////        tier1 = "N2-T1_AVI"
+////        defaultGateway = "10.15.4.1/24"
+////      }
+//      networks_data = [
 //        {
-//          name = "dns"
-//          services: [
-//            {
-//              port = 53
-//            }
-//          ]
+//          name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
+//          tier1 = "N2-T1_AVI_3"
+//          defaultGateway = "10.15.7.1/24"
 //        },
 //        {
-//          name = "gslb"
-//          services: [
-//            {
-//              port = 53
-//            }
-//          ]
-//          se_group_ref: "seGroupGslb"
+//          name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
+//          tier1 = "N2-T1_AVI_3"
+//          defaultGateway = "10.15.8.1/24"
 //        }
 //      ]
 //    }
-  }
-}
-
+//    vcenter = {
+//      dc = "N2-DC"
+//      cluster = "N2-Cluster1"
+//      datastore = "vsanDatastore"
+//      resource_pool = "N2-Cluster1/Resources"
+//      folderAvi = "Avi-Controllers"
+//    }
+//    domains = [
+//      {
+//        name = "tkg.altherr.info"
+//      }
+//    ]
+//    network_management = {
+//      name = "N2-T1_Segment-Mgmt-10.15.3.0-24" # for jump and Avi Controller
+//      defaultGateway = "10.15.3.1/24"
+//    }
+//    network_vip = {
+//      name = "N2-T1_Segment-VIP-A_10.15.7.0-24" # this is used for Avi IPAM profile config.
+//      defaultGateway = "10.15.7.1/24"
+////      defaultGatewaySe = true
+//      type = "V4"
+//      ipStartPool = "50"
+//      ipEndPool = "60"
+//      exclude_discovered_subnets = "true"
+//      vcenter_dvs = "true"
+//      dhcp_enabled = "false"
+//    }
+//    serviceEngineGroup = [
+//      {
+//        name = "Default-Group"
+//        numberOfSe = 0
+//        ha_mode = "HA_MODE_SHARED"
+//        min_scaleout_per_vs = "1"
+//        disk_per_se = "25"
+//        vcpus_per_se = "1"
+//        cpu_reserve = "false"
+//        memory_per_se = "1024"
+//        mem_reserve = "false"
+//        extra_shared_config_memory = "0"
+//        management_network = {
+//          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+//          defaultGateway = "10.15.3.1/24"
+//          ips = [
+//            "21",
+//            "22"
+//          ]
+//          dhcp = false
+//        }
+//        data_networks = [
+//          {
+//            name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
+//            defaultGateway = "10.15.7.1/24"
+//            defaultGatewaySeGroup = false
+//            ips = [
+//              "21",
+//              "22"
+//            ]
+//            dhcp = false
+//          },
+//          {
+//            name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
+//            defaultGateway = "10.15.8.1/24"
+//            defaultGatewaySeGroup = false
+//            ips = [
+//              "21",
+//              "22"
+//            ]
+//            dhcp = false
+//          }
+//        ]
+//      },
+//      {
+//        name = "n2-tkc-cluster-01"
+//        numberOfSe = 2
+////        dhcp = false # only for management
+//        ha_mode = "HA_MODE_SHARED_PAIR"
+//        min_scaleout_per_vs = "2"
+//        disk_per_se = "25"
+//        vcpus_per_se = "1"
+//        cpu_reserve = "false"
+//        memory_per_se = "1024"
+//        mem_reserve = "false"
+//        extra_shared_config_memory = "0"
+//        management_network = {
+//          name = "N2-T1_Segment-Mgmt-10.15.3.0-24"
+//          defaultGateway = "10.15.3.1/24"
+//          ips = [
+//            "23",
+//            "24"
+//          ]
+//          dhcp = false
+//        }
+//        data_networks = [
+//          {
+//            name = "N2-T1_Segment-VIP-A_10.15.7.0-24"
+//            defaultGateway = "10.15.7.1/24"
+//            defaultGatewaySeGroup = true
+//            ips = [
+//              "23",
+//              "24"
+//            ]
+//            dhcp = false
+//          },
+//          {
+//            name = "N2-T1_Segment-VIP-B_10.15.8.0-24"
+//            defaultGateway = "10.15.8.1/24"
+//            defaultGatewaySeGroup = false
+//            ips = [
+//              "23",
+//              "24"
+//            ]
+//            dhcp = false
+//          }
+//        ]
+//      }
+//    ]
+////    pool = {
+////      name = "pool1"
+////      lb_algorithm = "LB_ALGORITHM_ROUND_ROBIN"
+////    }
+////    pool_opencart = {
+////      name = "pool2-opencart"
+////      lb_algorithm = "LB_ALGORITHM_ROUND_ROBIN"
+////    }
+////    virtualservices = {
+////      http = [
+////        {
+////          name = "app1"
+////          pool_ref = "pool1"
+////          services: [
+////            {
+////              port = 80
+////              enable_ssl = "false"
+////            },
+////            {
+////              port = 443
+////              enable_ssl = "true"
+////            }
+////          ]
+////        },
+////        {
+////          name = "opencart"
+////          pool_ref = "pool2-opencart"
+////          services: [
+////            {
+////              port = 80
+////              enable_ssl = "false"
+////            },
+////            {
+////              port = 443
+////              enable_ssl = "true"
+////            }
+////          ]
+////        }
+////      ]
+////      dns = [
+////        {
+////          name = "dns"
+////          services: [
+////            {
+////              port = 53
+////            }
+////          ]
+////        },
+////        {
+////          name = "gslb"
+////          services: [
+////            {
+////              port = 53
+////            }
+////          ]
+////          se_group_ref: "seGroupGslb"
+////        }
+////      ]
+////    }
+//  }
+//}
+//

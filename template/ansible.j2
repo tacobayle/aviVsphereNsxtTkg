@@ -67,8 +67,7 @@ resource "null_resource" "ansible_no_access_nsxt_dfw_rule" {
       "git clone ${var.ansible.NsxtModuleUrl}",
       "git clone ${var.ansible.nsxtConfigureDfwUrl} --branch ${var.ansible.nsxtConfigureDfwTag}",
       "cp ${basename(var.ansible.nsxtConfigureDfwUrl)}/local.yml ${basename(var.ansible.NsxtModuleUrl)}/local.yml",
-      "echo ${basename(var.ansible.NsxtModuleUrl)} ; ls ${basename(var.ansible.NsxtModuleUrl)}",
-      "cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars '{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": \"no_access_se\", \"policy_scope\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"rule_name\": \"rule1\", \"source_group\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"destination_group\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"rule_scope\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}}'",
+      "cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars '{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": ${jsonencode(var.no_access_vcenter.nsxt_se_dfw_policy_name)}, \"policy_scope\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"rule_name\": \"rule1\", \"source_group\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"destination_group\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}, \"rule_scope\": ${jsonencode(nsxt_policy_group.se_no_access[0].path)}}'",
     ]
   }
 }

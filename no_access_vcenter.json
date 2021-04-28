@@ -1,0 +1,155 @@
+{
+  "no_access_vcenter": {
+    "name": "cloudNoAccess",
+    "environment": "vsphere",
+    "dhcp_enabled": false,
+    "application": true,
+    "nsxt_exclusion_list": true,
+    "nsxt_se_dfw": true,
+    "nsxt_se_dfw_policy_name": "nsxt_se_no_access",
+    "se_prefix": "EasyAvi-",
+    "nsxt": {
+      "transport_zone": {
+        "name": "N2_TZ_nested_nsx-overlay"
+      },
+      "tier1s": [
+        {
+          "name": "N2-T1_AVI_3",
+          "description": "N2-T1_AVI_3",
+          "route_advertisement_types": [
+            "TIER1_STATIC_ROUTES",
+            "TIER1_CONNECTED",
+            "TIER1_LB_VIP"
+          ],
+          "tier0": "N2_T0"
+        }
+      ],
+      "networks_data": [
+        {
+          "name": "N2-T1_Segment-VIP-A_10.15.7.0-24",
+          "tier1": "N2-T1_AVI_3",
+          "defaultGateway": "10.15.7.1/24"
+        },
+        {
+          "name": "N2-T1_Segment-VIP-B_10.15.8.0-24",
+          "tier1": "N2-T1_AVI_3",
+          "defaultGateway": "10.15.8.1/24"
+        }
+      ]
+    },
+    "vcenter": {
+      "dc": "N2-DC",
+      "cluster": "N2-Cluster1",
+      "datastore": "vsanDatastore",
+      "resource_pool": "N2-Cluster1/Resources",
+      "folderAvi": "Avi-Controllers"
+    },
+    "domains": [
+      {
+        "name": "tkg.altherr.info"
+      }
+    ],
+    "network_management": {
+      "name": "N2-T1_Segment-Mgmt-10.15.3.0-24",
+      "defaultGateway": "10.15.3.1/24"
+    },
+    "network_vip": {
+      "name": "N2-T1_Segment-VIP-A_10.15.7.0-24",
+      "defaultGateway": "10.15.7.1/24",
+      "type": "V4",
+      "ipStartPool": "50",
+      "ipEndPool": "60",
+      "exclude_discovered_subnets": "true",
+      "vcenter_dvs": "true",
+      "dhcp_enabled": "false"
+    },
+    "serviceEngineGroup": [
+      {
+        "name": "Default-Group",
+        "numberOfSe": 0,
+        "ha_mode": "HA_MODE_SHARED",
+        "min_scaleout_per_vs": "1",
+        "disk_per_se": "25",
+        "vcpus_per_se": "1",
+        "cpu_reserve": "false",
+        "memory_per_se": "1024",
+        "mem_reserve": "false",
+        "extra_shared_config_memory": "0",
+        "management_network": {
+          "name": "N2-T1_Segment-Mgmt-10.15.3.0-24",
+          "defaultGateway": "10.15.3.1/24",
+          "ips": [
+            "21",
+            "22"
+          ],
+          "dhcp": false
+        },
+        "data_networks": [
+          {
+            "name": "N2-T1_Segment-VIP-A_10.15.7.0-24",
+            "defaultGateway": "10.15.7.1/24",
+            "defaultGatewaySeGroup": false,
+            "ips": [
+              "21",
+              "22"
+            ],
+            dhcp: false
+          },
+          {
+            "name": "N2-T1_Segment-VIP-B_10.15.8.0-24",
+            "defaultGateway": "10.15.8.1/24",
+            "defaultGatewaySeGroup": false,
+            "ips": [
+              "21",
+              "22"
+            ],
+            "dhcp": false
+          }
+        ]
+      },
+      {
+        "name": "n2-tkc-cluster-01",
+        "numberOfSe": 2,
+        "ha_mode": "HA_MODE_SHARED_PAIR",
+        "min_scaleout_per_vs": "2",
+        "disk_per_se": "25",
+        "vcpus_per_se": "1",
+        "cpu_reserve": "false",
+        "memory_per_se": "1024",
+        "mem_reserve": "false",
+        "extra_shared_config_memory": "0",
+        "management_network": {
+          "name": "N2-T1_Segment-Mgmt-10.15.3.0-24",
+          "defaultGateway": "10.15.3.1/24",
+          "ips": [
+            "23",
+            "24"
+          ],
+          "dhcp": false
+        },
+        "data_networks": [
+          {
+            "name": "N2-T1_Segment-VIP-A_10.15.7.0-24",
+            "defaultGateway": "10.15.7.1/24",
+            "defaultGatewaySeGroup": true,
+            "ips": [
+              "23",
+              "24"
+            ],
+            dhcp: false
+          },
+          {
+            "name": "N2-T1_Segment-VIP-B_10.15.8.0-24",
+            "defaultGateway": "10.15.8.1/24",
+            "defaultGatewaySeGroup": false,
+            "ips": [
+              "23",
+              "24"
+            ],
+            "dhcp": false
+          }
+        ]
+      }
+    ]
+  }
+}
