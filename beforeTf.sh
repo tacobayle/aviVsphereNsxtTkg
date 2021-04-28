@@ -230,6 +230,10 @@ for vcenter in $(cat nsxt.json | jq -c -r .nsxt.vcenters[])
     #
     count=$((count+1))
   done
+#
+echo "{}" | tee config.json >/dev/null
+python3 python/template.py template/ansible.j2 config.json ansible.tf
+rm config.json
 if [[ $beforeTfError == 1 ]]
 then
   exit 1
