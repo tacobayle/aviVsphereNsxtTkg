@@ -44,4 +44,19 @@ resource "vsphere_virtual_machine" "jump" {
       user-data   = base64encode(data.template_file.jump{{ count }}.rendered)
     }
   }
+
+  connection {
+    host        = self.default_ip_address
+    type        = "ssh"
+    agent       = false
+    user        = var.jump.username
+    private_key = file(var.jump.private_key_path)
+  }
+
+  provisioner "remote-exec" {
+    inline      = [
+      "while [ ! -f /tmp/cloudInitDone.log ]; do sleep 1; done"
+    ]
+  }
+
 }
