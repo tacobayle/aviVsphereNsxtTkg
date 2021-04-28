@@ -52,7 +52,7 @@ fi
 echo ""
 echo "++++++++++++++++++++++++++++++++"
 echo "Destroy Avi Config"
-#ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}'
+ssh -o StrictHostKeyChecking=no -i ${privateKey} -t ubuntu@${jump_ip} 'git clone ${aviPbAbsentUrl} --branch ${aviPbAbsentTag} ; cd $(basename ${aviPbAbsentUrl}) ; ansible-playbook local.yml --extra-vars @${aviCredsJsonFile}'
 echo ""
 echo "++++++++++++++++++++++++++++++++"
 echo "Destroy NSX-T Config"
