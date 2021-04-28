@@ -85,7 +85,7 @@ resource "null_resource" "ansible_nsxt_dfw_rule" {
 
   provisioner "remote-exec" {
     inline      = [
-      "cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars '{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": ${jsonencode(var.nsxt.nsxt_se_dfw_policy_name)}, \"policy_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}, \"rule_name\": \"rule1\", \"source_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}, \"destination_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}, \"rule_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}}'",
+      "cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars '{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": ${jsonencode(var.nsxt.nsxt_se_dfw_policy_name)}, \"policy_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}, \"rule_name\": \"rule1\", \"source_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}, \"destination_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}, \"rule_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}}'",
     ]
   }
 }
