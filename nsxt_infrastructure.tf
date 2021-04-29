@@ -3,7 +3,7 @@ data "nsxt_policy_transport_zone" "tz" {
 }
 
 data "nsxt_policy_transport_zone" "tz_nsxt" {
-  display_name = var.nsxt.nsxt.transport_zone.name
+  display_name = var.nsxt.transport_zone.name
 }
 
 data "nsxt_policy_tier0_gateway" "tier0" {

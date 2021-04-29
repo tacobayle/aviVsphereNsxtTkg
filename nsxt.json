@@ -1,7 +1,6 @@
 {
   "nsxt": {
     "name": "cloudNsxt",
-    "dhcp_enabled": false,
     "obj_name_prefix": "AVINSXT",
     "nsxt_se_dfw": true,
     "nsxt_se_dfw_policy_name": "nsxt_se",
@@ -14,9 +13,6 @@
       }
     ],
     "nsxt": {
-      "transport_zone": {
-        "name": "N2_TZ_nested_nsx-overlay"
-      },
       "tier1s": [
         {
           "name": "N2-T1_AVI_1",
@@ -97,6 +93,9 @@
       "floating_ip": false,
       "aviCredsJsonFile": "~/.creds.json"
     },
+    "transport_zone": {
+      "name": "N2_TZ_nested_nsx-overlay"
+    },
     "network_management": {
       "name": "N2-T1_Segment-Mgmt-10.15.3.0-24",
       "tier1": "N2-T1_AVI_1",
@@ -118,14 +117,16 @@
         "tier1": "N2-T1_AVI_1",
         "defaultGateway": "10.15.4.1/24",
         "ipStartPool": "11",
-        "ipEndPool": "50"
+        "ipEndPool": "50",
+        "dhcp": false
       },
       {
         "name": "N2-T1_Segment-VIP-B_10.15.5.0-24",
         "tier1": "N2-T1_AVI_2",
         "defaultGateway": "10.15.5.1/24",
         "ipStartPool": "11",
-        "ipEndPool": "50"
+        "ipEndPool": "50",
+        "dhcp": false
       }
     ],
     "network_backend": {
