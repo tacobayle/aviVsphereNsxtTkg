@@ -96,7 +96,7 @@ resource "local_file" "destroy" {
 }
 
 resource "local_file" "tkg" {
-  content     = templatefile("${path.module}/template/tkg.sh.tmpl", { dc = var.no_access_vcenter.vcenter.dc, vsphere_username = var.vsphere_username, vsphere_password = var.vsphere_password, vsphere_server = var.vsphere_server, datastore = var.no_access_vcenter.vcenter.datastore, cluster = var.no_access_vcenter.vcenter.cluster, tkg_cluster = var.no_access_vcenter.vcenter.tkg_cluster, namespace = var.no_access_vcenter.vcenter.namespace, ako_url = var.no_access_vcenter.ako_url, ako_version = var.no_access_vcenter.ako_version, avi_password = var.avi_password })
+  content     = templatefile("${path.module}/template/tkg.sh.tmpl", { dc = var.no_access_vcenter.vcenter.dc, vsphere_username = var.vsphere_username, vsphere_password = var.vsphere_password, vsphere_server = var.vsphere_server, datastore = var.no_access_vcenter.vcenter.datastore, cluster = var.no_access_vcenter.vcenter.cluster, tkg_cluster = var.no_access_vcenter.vcenter.tkg_cluster, namespace = var.no_access_vcenter.vcenter.namespace, ako_namespace = var.no_access_vcenter.ako_namespace , ako_url = var.no_access_vcenter.ako_url, ako_version = var.no_access_vcenter.ako_version, avi_password = var.avi_password })
   filename = "${path.module}/tkg.sh"
 }
 
