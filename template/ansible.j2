@@ -101,7 +101,7 @@ resource "local_file" "tkg" {
 }
 
 resource "local_file" "values" {
-  depends_on = []vsphere_virtual_machine.controller
+  depends_on = [vsphere_virtual_machine.controller]
   content     = templatefile("${path.module}/template/values.yaml.tmpl", { tkg_cluster = var.no_access_vcenter.vcenter.tkg_cluster, tkg_cni = var.no_access_vcenter.vcenter.tkg_cni, subnetIP = cidrhost(var.no_access_vcenter.network_vip.defaultGateway, 0), subnetPrefix = split("/", var.no_access_vcenter.network_vip.defaultGateway)[1], networkName = var.no_access_vcenter.network_vip.name, serviceType = var.no_access_vcenter.ako_service_type, avi_version = split("-", basename(var.nsxt.aviOva))[1], cloudName = var.no_access_vcenter.name, controllerHost = vsphere_virtual_machine.controller.0.default_ip_address })
   filename = "${path.module}/values.yaml"
 }
