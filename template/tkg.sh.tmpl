@@ -3,6 +3,7 @@ export GOVC_DATACENTER=${dc}
 export GOVC_URL=${vsphere_username}:${vsphere_password}@${vsphere_server}
 export GOVC_INSECURE=true
 export GOVC_DATASTORE=${datastore}
+IFS=$'\n'
 for item in $(govc namespace.cluster.ls -json | jq -c -r .[])
 do
         if [[ $(echo $item | jq -r .cluster_name) == "${cluster}" ]]
@@ -10,12 +11,12 @@ do
         cluster=$(echo $item | jq -r .cluster)
         fi
 done
-supervisor_cluster_ip=$(curl -k -s -X GET "https://${vsphere_server}/api/vcenter/namespace-management/clusters/$cluster" -H "vmware-api-session-id:$(curl -k -s -X POST -u ${vsphere_username}:${vsphere_password} https://{vsphere_server}/api/session -H "Content-Type: application/json" | tr -d \")" | jq .api_server_cluster_endpoint  | tr -d \")
+supervisor_cluster_ip=$(curl -k -s -X GET "https://${vsphere_server}/api/vcenter/namespace-management/clusters/$cluster" -H "vmware-api-session-id:$(curl -k -s -X POST -u ${vsphere_username}:${vsphere_password} https://${vsphere_server}/api/session -H "Content-Type: application/json" | tr -d \")" | jq .api_server_cluster_endpoint  | tr -d \")
 export KUBECTL_VSPHERE_PASSWORD=${vsphere_password} ; kubectl vsphere login --server=$supervisor_cluster_ip --tanzu-kubernetes-cluster-name ${tkg_cluster} --tanzu-kubernetes-cluster-namespace ${namespace} --vsphere-username ${vsphere_username}
 unset KUBECTL_VSPHERE_PASSWORD
 kubectl create ns ${ako_namespace}
 helm repo add ako ${ako_url}
-# helm --debug install ako/ako --generate-name --version ${ako_version} -f values.yaml --namespace=${ako_namespace} --set avicredentials.username=admin --set avicredentials.password=${avi_password}
+helm --debug install ako/ako --generate-name --version ${ako_version} -f values.yaml --namespace=${ako_namespace} --set avicredentials.username=admin --set avicredentials.password=${avi_password}
 # change the fw rules and Nat rules
 # Create the guest book App
 # create Avi Service

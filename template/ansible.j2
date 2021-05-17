@@ -100,8 +100,13 @@ resource "local_file" "tkg" {
   filename = "${path.module}/tkg.sh"
 }
 
+resource "local_file" "values" {
+  content     = templatefile("${path.module}/template/values.yaml.tmpl", { tkg_cluster = no_access_vcenter.vcenter.tkg_cluster, tkg_cni = no_access_vcenter.vcenter.tkg_cni, subnetIP = cidrhost(no_access_vcenter.network_vip.defaultGateway, 0), subnetPrefix = split("/", no_access_vcenter.network_vip.defaultGateway)[1], networkName = ${jsonencode(no_access_vcenter.network_vip.name), serviceType = no_access_vcenter.ako_service_type, avi_version = split("-", basename(var.nsxt.aviOva))[1], cloudName = var.no_access_vcenter.name, controllerHost = vsphere_virtual_machine.controller.0.default_ip_address })
+  filename = "${path.module}/values.yaml"
+}
+
 resource "null_resource" "tkg" {
-  depends_on = [local_file.tkg, null_resource.ansible]
+  depends_on = [local_file.tkg, null_resource.ansible, null_resource.tkg]
   provisioner "local-exec" {
     command = "/bin/bash tkg.sh"
   }
