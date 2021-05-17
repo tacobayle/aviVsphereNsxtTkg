@@ -3,6 +3,9 @@
 # rm -f backend* ; rm -f controller* ; rm -f jump* ; rm -f provider_vcenter* ; rm -f vsphere_infrastructure* ; rm -f nsxt_pool* ; /bin/bash beforeTf.sh
 current_dir=$PWD
 sudo apt install -y jq
+#
+# Check if govc is installed
+#
 if ! command -v govc &> /dev/null
 then
     cd /usr/local/bin
@@ -11,6 +14,14 @@ then
     sudo mv govc_linux_amd64 govc
     sudo chmod +x govc
 fi
+#
+# Check if helm is installed
+#
+if ! command -v helm &> /dev/null
+then
+    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+fi
+#
 cd $current_dir
 #
 # This will read environment variable such the following:

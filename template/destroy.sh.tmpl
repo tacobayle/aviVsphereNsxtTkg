@@ -1,6 +1,9 @@
 #!/bin/bash
 current_dir=$PWD
 sudo apt install -y jq
+#
+# Check if govc is installed
+#
 if ! command -v govc &> /dev/null
 then
     cd /usr/local/bin
@@ -9,6 +12,7 @@ then
     sudo mv govc_linux_amd64 govc
     sudo chmod +x govc
 fi
+#
 cd $current_dir
 count=0
 IFS=$'\n'
@@ -45,9 +49,9 @@ if [ "$app_destroy" = true ]
 then
   echo ""
   echo "++++++++++++++++++++++++++++++++"
-  echo "Waiting for 120 seconds"
+  echo "Waiting for 60 seconds"
   echo ""
-  sleep 120
+  sleep 60
 fi
 echo ""
 echo "++++++++++++++++++++++++++++++++"

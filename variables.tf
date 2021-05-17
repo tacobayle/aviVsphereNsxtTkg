@@ -15,6 +15,7 @@ variable "vcenter_credentials" {}
 
 variable "no_access_vcenter" {}
 
+
 //variable "contentLibrary" {
 //  default = {
 //    name = "Avi Content Library"
@@ -90,7 +91,7 @@ variable "ansible" {
     aviConfigureUrl = "https://github.com/tacobayle/aviConfigure"
     aviConfigureTag = "v5.55"
     aviPbAbsentUrl = "https://github.com/tacobayle/ansiblePbAviAbsent"
-    aviPbAbsentTag = "v1.51"
+    aviPbAbsentTag = "v1.53"
     nsxtConfigureDfwUrl = "https://github.com/tacobayle/ansibleNsxtConfigureDfw"
     nsxtConfigureDfwTag = "v1.04"
     NsxtModuleUrl = "https://github.com/vmware/ansible-for-nsxt"

@@ -85,7 +85,7 @@ resource "null_resource" "ansible_nsxt_dfw_rule" {
 
   provisioner "remote-exec" {
     inline      = [
-      "cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars '{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": ${jsonencode(var.nsxt.nsxt_se_dfw_policy_name)}, \"policy_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}, \"rule_name\": \"rule1\", \"source_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}, \"destination_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt)}, \"rule_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}}'",
+      "cd ${basename(var.ansible.NsxtModuleUrl)} ; ansible-playbook local.yml -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars '{\"nsx_server\": ${jsonencode(var.nsx_server)}, \"nsx_username\": ${jsonencode(var.nsx_username)}, \"nsx_password\": ${jsonencode(var.nsx_password)}, \"policy_name\": ${jsonencode(var.nsxt.nsxt_se_dfw_policy_name)}, \"policy_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}, \"rule_name\": \"rule1\", \"source_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}, \"destination_group\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}, \"rule_scope\": ${jsonencode(data.nsxt_policy_group.se_nsxt.path)}}'",
     ]
   }
 }
@@ -93,4 +93,16 @@ resource "null_resource" "ansible_nsxt_dfw_rule" {
 resource "local_file" "destroy" {
   content     = templatefile("${path.module}/template/destroy.sh.tmpl", { privateKey = var.jump.private_key_path, jump_ip = vsphere_virtual_machine.jump.default_ip_address, aviPbAbsentUrl = var.ansible.aviPbAbsentUrl, aviPbAbsentTag = var.ansible.aviPbAbsentTag, aviCredsJsonFile = var.nsxt.controller.aviCredsJsonFile})
   filename = "${path.module}/destroy.sh"
+}
+
+resource "local_file" "tkg" {
+  content     = templatefile("${path.module}/template/tkg.sh.tmpl", { dc = var.no_access_vcenter.vcenter.dc, vsphere_username = var.vsphere_username, vsphere_password = var.vsphere_password, vsphere_server = var.vsphere_server, datastore = var.no_access_vcenter.vcenter.datastore, cluster = var.no_access_vcenter.vcenter.cluster, tkg_cluster = var.no_access_vcenter.vcenter.tkg_cluster, namespace = var.no_access_vcenter.vcenter.namespace, ako_url = var.no_access_vcenter.ako_url, ako_version = var.no_access_vcenter.ako_version, avi_password = var.avi_password })
+  filename = "${path.module}/tkg.sh"
+}
+
+resource "null_resource" "tkg" {
+  depends_on = [local_file.tkg, null_resource.ansible]
+  provisioner "local-exec" {
+    command = "/bin/bash tkg.sh"
+  }
 }
