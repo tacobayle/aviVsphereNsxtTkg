@@ -107,7 +107,7 @@ resource "local_file" "values" {
 }
 
 resource "null_resource" "tkg" {
-  depends_on = [local_file.tkg, null_resource.ansible, null_resource.tkg]
+  depends_on = [local_file.tkg, null_resource.ansible, null_resource.tkg, local_file.values]
   provisioner "local-exec" {
     command = "/bin/bash tkg.sh"
   }
