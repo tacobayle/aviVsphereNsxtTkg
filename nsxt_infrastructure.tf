@@ -173,6 +173,30 @@ resource "nsxt_policy_group" "se_no_access" {
   }
 }
 
+resource "nsxt_policy_group" "pods_cidr" {
+  count = (var.no_access_vcenter.nsxt_se_dfw == true ? 1 : 0)
+  display_name = "EasyAvi-Pods_CIDR"
+  description  = "EasyAvi-Pods_CIDR"
+  criteria {
+    ipaddress_expression {
+      ip_addresses = ["10.244.0.0/20"]
+    }
+  }
+}
+
+resource "nsxt_policy_nat_rule" "no_nat_se_pods" {
+  count = (var.no_access_vcenter.nsxt_se_dfw == true ? 1 : 0)
+  display_name         = "EasyAvi-no-nat-se-pods"
+  action               = "NO_DNAT"
+  source_networks      = ["${cidrhost(no_access_vcenter.serviceEngineGroup[1].data_networks[0].defaultGateway, 0)}/${split("/", no_access_vcenter.serviceEngineGroup[1].data_networks[0].defaultGateway)[1]}"]
+  destination_networks = ["10.244.0.0/20"]
+  translated_networks  = ["ANY"]
+  gateway_path         = "/infra/tier-1s/cgw"
+  logging              = false
+  firewall_match       = "MATCH_INTERNAL_ADDRESS"
+}
+
+
 data "nsxt_policy_group" "se_nsxt" {
   depends_on = [null_resource.ansible]
   display_name = "${var.nsxt.obj_name_prefix}-ServiceEngines"

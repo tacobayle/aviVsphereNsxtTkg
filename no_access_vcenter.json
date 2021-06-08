@@ -8,6 +8,8 @@
     "nsxt_exclusion_list": true,
     "nsxt_se_dfw": true,
     "nsxt_se_dfw_policy_name": "no_access_se",
+    "nsxt_dfw_policy_name_se_pods": "no_access_se_pods",
+    "nsxt_dfw_policy_name_pods_se": "no_access_pods_se",
     "ako_url": "https://projects.registry.vmware.com/chartrepo/ako",
     "ako_version": "1.3.4",
     "ako_namespace": "avi-system",
